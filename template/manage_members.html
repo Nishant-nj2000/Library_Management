@@ -1,0 +1,92 @@
+<title>Manage Members</title>
+{% extends 'parent.html'%}
+
+{% block nav_manage_members %} class = "active" {% endblock %}
+
+{% block content %}
+    <br>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="width:30%; margin-left: 20px;">
+                    <span>{{ message }}</span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="user-dashboard">
+        <div class="row">
+            <div class="col-md-12 col-sm-7 col-xs-12 gutter">
+                <div class="sales report">
+                    <h2>Manage Members</h2>
+                    <div class="btn-group col-md-4">
+                        <ul class="list-inline header-top my-2 my-lg-0 ml-auto">
+                            <li class="hidden-xs" ><a href="#" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#add_book">+ Member</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="add_book" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header login-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h4 class="modal-title">Add Member</h4>
+                </div>
+                <form method="POST" action="{{url_for('add_member')}}" name="add_member">
+                    <div class="modal-body">
+                        <input type="text" pattern="[a-zA-Z\s]+" placeholder="Member Full-Name" name="m_name">
+                        <input type="text" pattern="[7-9]{1}[0-9]{9}" placeholder="Contact no." name="mobile">
+                        <input type="email" placeholder="Email Id" name="email_id">
+                        <textarea placeholder="Address" name="address"></textarea> 
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="cancel" data-dismiss="modal">Close</button>
+                        <button type="submit" class="add-project">Import</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+    
+    <br>
+    <table class="table-member table table-hover table-striped table-responsive-lg table-bordered">
+        <thead class="thead-dark">
+            <th scope="col">Member Id</th>
+            <th scope="col">Member Name</th>
+            <th scope="col">Mobile no.</th>
+            <th scope="col">Email Id</th>
+            <th scope="col">Address</th>
+            <th scope="col">Update</th>
+            <th scope="col">Delete</th>
+        </thead>
+            
+        <tbody>
+            {% for x in data %}
+                <tr>
+                    <td>{{ x.member_id }}</td>
+                    <td>{{ x['m_name'] }}</td>
+                    <td>{{ x['mobile'] }}</td>
+                    <td>{{ x['email_id'] }}</td>
+                    <td>{{ x['m_address'] }}</td>
+                    <td style="text-align: center;"><button type="submit" name="update" class="btn btn-primary" value="{{ x.member_id }}">Update</button></td>
+                    <td style="text-align: center;"><button type="submit" name="delete" value="{{ x.member_id }}" class="btn btn-danger">Delete</button></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+            
+{% endblock %}

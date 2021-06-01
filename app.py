@@ -1,34 +1,34 @@
-from flask import Flask, render_template,abort,jsonify
+from flask import Flask, render_template,abort,jsonify,request,redirect,session
+from flask import *  
 from flaskext.mysql import MySQL
-# from flask_mail import Mail, Message
-# from random import *
-# from datetime import *
-# from flask_htmlmin import HTMLMIN
+import re
 import time
 import os
 import string
 import requests
-# import random
 import json
 from datetime import datetime
 
+
 app = Flask(__name__,template_folder = 'template')
 
-mysql = MySQL()
+app.secret_key = "Library Management"
+
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'Abcde@123'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_DB'] = 'library'
-mysql.init_app(app)
-connection = mysql.connect()
+mysql = MySQL(app)
 
+
+#MySQL Query Driver
 def mysql_query(sql):
 	connection = mysql.connect()
 	cursor = connection.cursor()
 	if sql.strip().split(' ')[0].lower() == "select" :
-		print(sql)
+		# print(sql)
 		cursor.execute(sql)
-		print(cursor._executed)
+		# print(cursor._executed)
 		
 		columns = [column[0] for column in cursor.description]
 		results = []
@@ -41,7 +41,6 @@ def mysql_query(sql):
 	if sql.strip().split(' ')[0].lower() != "select" :
 		cursor.execute(sql)
 		print(cursor._executed)
-		
 		connection.commit()
 		cursor.close()
 		connection.close()
@@ -73,6 +72,34 @@ def mysql_query(sql):
 def main():
     return render_template('index.html')
 
+@app.route('/manage_books')
+def manage_books():
+    return render_template('manage_books.html')
+
+@app.route('/manage_members')
+def manage_members():
+	data = mysql_query("SELECT * from members")
+	return render_template('manage_members.html',data=data)
+
+@app.route('/add_member', methods=['POST'])
+def add_member(): 
+	if request.method == 'POST' and 'm_name' in request.form and 'mobile' in request.form and 'email_id' in request.form and 'address' in request.form :
+		m_name = request.form['m_name']
+		mobile = request.form['mobile']
+		email_id = request.form['email_id']
+		m_address = request.form['address']
+		
+		account = mysql_query("SELECT email_id,mobile from members where email_id='{}' OR mobile='{}'".format(email_id,mobile))
+		if account:
+			flash('Member Already Exists', 'danger')
+		else:
+			mysql_query("INSERT INTO members(m_name,mobile,email_id,m_address) values ('{}', '{}', '{}', '{}')".format(m_name,mobile,email_id,m_address))
+			flash("Member Added Successfully !",'info')
+	elif request.method == 'POST':
+		flash('Please fill the form !','error')
+
+	data = mysql_query("SELECT * from members")
+	return render_template('manage_members.html',data=data)
 
 if __name__ == "__main__":
 	app.run(port='8000', debug=True)

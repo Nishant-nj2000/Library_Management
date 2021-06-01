@@ -21,6 +21,15 @@ li,ul{
     display: table;
 }
 
+.table-member
+{
+    margin-left: 20px;
+    border-radius: 8px;
+    width: 97%;
+    margin-right: 0px;
+    padding-right: 0px;
+}
+
 .login-header {
     display: inline-block;
     width: 100%;
@@ -417,15 +426,16 @@ header {
     padding: 21px 0;
 }
 .sales {
-    background:#c9c8c8 none repeat scroll 0 0;
+    background: #343a40 none repeat scroll 0 0;
     border: 1px solid #d4d9e3;
     border-radius: 8px;
     display: inline-block;
-    padding: 15px;
+    padding: 10px;
+    padding-right: 0px;
     width: 100%;
 }
 .sales button {
-    background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+    background: #c9c8c8 none repeat scroll 0 0;
     border: 1px solid #0e1a35;
     border-radius: 100px;
     font-size: 15px;
@@ -443,7 +453,7 @@ header {
     float: right;
 }
 .sales h2 {
-    color: rgb(94, 92, 92);
+    color: white;
     float: left;
     font-size: 21px;
     font-weight: 600;
@@ -451,7 +461,7 @@ header {
     padding: 9px 0 0;
 }
 .btn.btn-secondary.btn-lg.dropdown-toggle > span {
-    font-size: medium;
+    font-size: large;
     font-weight: 600;
     letter-spacing: 0.5px;
 }
@@ -459,7 +469,7 @@ header {
     border: 0px;
     margin-left: 16px;
     width: 86%;
-    background-color:#5a6268;
+    background-color:#23272b;
     margin-top: 0px;
     border-radius: 0px 0px 7px 7px;
 }
@@ -485,7 +495,7 @@ header {
     width: 100%;
 }
 .sales .dropdown-menu > a:hover{
-    color:black;  
+    color:royalblue;  
 }
 .shield-buttons {
     display: none;
@@ -545,10 +555,11 @@ header {
     
 }
 .modal{
-    top: 20%; 
+    top: 10%; 
+    padding-bottom: 100px;
 }
 .modal-header .close {
-    margin-top: 2px;
+    margin-bottom: 0px;
 }
 .search input:focus{
     border-bottom: 1px solid #BDC4D4;
@@ -559,11 +570,6 @@ header {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
 /*Main CSS*/
-
-
-
-
-
 
 @media only screen and (max-device-width: 767px) {
     .login-logo img {
