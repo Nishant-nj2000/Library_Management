@@ -165,14 +165,10 @@ def issue_book():
 	if request.method == 'POST':
 		book_id = request.form['book_id']
 		member_id = request.form['member_id']
-		data = mysql_query("SELECT title from books where book_id = '{}'".format(book_id))
-		print(data)
-		data1 = mysql_query("SELECT m_name from members where member_id = '{}'".format(member_id))
-		print(data1)
-		mysql_query("INSERT into transactions(book_id,title,member_id,m_name) values ('{}','{}','{}','{}')".format(book_id,data,member_id,data1))
-		print(mysql_query)
-	data3 = mysql_query("SELECT * from transactions")
-	return render_template('issue_books.html',data3=data3)
+		datax = mysql_query("SELECT title from books where book_id = '{}'".format(book_id))
+		datay = mysql_query("SELECT m_name from members where member_id = '{}'".format(member_id))
+		mysql_query("INSERT into transactions(book_id,title,member_id,m_name) values ('{}','{}','{}','{}')".format(book_id,datax[0]['title'],member_id,datay[0]['m_name']))
+	return redirect(url_for('issue_books_page_load'))
 
 if __name__ == "__main__":
 	app.run(port='8000', debug=True)
