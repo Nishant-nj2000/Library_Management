@@ -1,0 +1,28 @@
+<title>Library Management System</title>
+{% extends 'parent.html'%}
+
+{% block nav_home %}class = "active" {% endblock %}
+
+{% block content %}
+    <br>
+    <div class="user-dashboard">
+        <div class="row">
+            <div class="col-md-12 col-sm-7 col-xs-12 gutter">
+
+                <div class="sales report">
+                    <h2>Reports</h2>
+                    <div class="btn-group col-md-4">
+                        <button class="btn btn-dark btn-md dropdown-toggle btn-sales" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span><b>Select Report Type</b></span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#">Most Popular Books</a>
+                            <hr>
+                            <a href="#">Highest Paying Customer</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,158 @@
+<title>Manage Books</title>
+{% extends 'parent.html'%}
+
+{% block nav_manage_books %} class = "active" {% endblock %}
+
+{% block content %}
+    <br>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="width:30%; margin-left: 20px;">
+                    <span>{{ message }}</span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="user-dashboard">
+        <div class="row">
+            <div class="col-md-12 col-sm-7 col-xs-12 gutter">
+                <div class="sales report">
+                    <h2>Manage Books</h2>
+                    <div class="btn-group col-md-4">
+                        <ul class="list-inline header-top my-2 my-lg-0 ml-auto">
+                            <li class="hidden-xs" ><a href="#" class="btn btn-primary btn-md btn-xs" data-toggle="modal" data-target="#add_book"><i class="fa fa-download" aria-hidden="true" style="color: white;"></i> <b>Import Books</b></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="add_book" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header login-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h4 class="modal-title">Import Books</h4>
+                </div>
+                <form method="POST" action="" name="import_books">
+                    <div class="modal-body">
+                        <input type="number" min="1" placeholder="Enter No. of Records to import" name="no_of_records">
+                        <p>Import Using</p>
+                        <input type="text" placeholder="Book Title" name="title">
+                        <input type="number" min="1" placeholder="No. of Pages" name="num_pages">
+                        <input type="text" placeholder="Book Authors" name="authors">
+                        <input type="text" placeholder="ISBN" name="isbn">
+                        <input type="text" placeholder="Publisher" name="publisher">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="cancel" data-dismiss="modal">Close</button>
+                        <button type="submit" class="add-project">Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <table id="dtbooks" class="table-member table table-hover table-responsive-lg table-bordered">
+        <thead class="thead-dark">
+            <th scope="col">Book Id</th>
+            <th scope="col">Book Title</th>
+            <th scope="col">Ratings</th>
+            <th scope="col">Authors</th>
+            <th scope="col">Language</th>
+            <th scope="col">Publication Date</th>
+            <th scope="col">Publisher</th>
+            <th scope="col">In Stock</th>
+            <th scope="col" style="text-align: center;">Update</th>
+            <th scope="col" style="text-align: center;">Delete</th>
+        </thead>
+            
+        <tbody>
+            {% for x in data %}
+                <tr>
+                    <td>{{ x['book_id'] }}</td>
+                    <td>{{ x['title'] }}</td>
+                    <td>{{ x['average_rating'] }}</td>
+                    <td>{{ x['authors'] }}</td>
+                    <td>{{ x['language_code'] }}</td>
+                    <td>{{ x['publication_date'] }}</td>
+                    <td>{{ x['publisher'] }}</td>
+                    <td>{{ x['stock'] }}</td>
+                    <td style="text-align: center;"><button type="submit" name="update" class="btn btn-primary" data-toggle="modal" data-target="#update_book{{ x['book_id'] }}" style="border-radius: 20px;"><i class="fa fa-pencil-square-o circle-icon" aria-hidden="true"></i></button></td>
+                    <td style="text-align: center;"><button type="submit" name="delete" class="btn btn-danger" data-toggle="modal" data-target="#delete_book{{ x['book_id'] }}" style="border-radius: 20px;"><i class="fa fa-trash circle-icon" aria-hidden="true"></i></button></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% for x in data %}
+        <div id="update_book{{ x['book_id'] }}" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header login-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h4 class="modal-title">Update Book</h4>
+                    </div>
+                    <form method="POST" action="{{url_for('update_book')}}" name="update_book">
+                        <div class="modal-body">
+                            <input type="text" placeholder="Book Title" name="title" value="{{ x['title'] }}">
+                            <input type="number" placeholder="Average Rating" name="average_rating" value="{{ x['average_rating'] }}">
+                            <input type="text" placeholder="Authors" name="authors" value="{{ x['authors'] }}">
+                            <select name="language_code">
+                                <option value="{{ x['language_code'] }}">{{ x['language_code'] }}</option>
+                                {% for x in data1 %}
+                                    <option>{{ x['language_code'] }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="date" name="publication_date" value="{{ x['publication_date'] }}">
+                            <input type="text" name="publisher" value="{{ x['publisher'] }}">
+                            <input type="number" min="0" placeholder="Stock Availability" name="stock" value="{{ x['stock'] }}"> 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="cancel" data-dismiss="modal">Close</button>
+                            <button type="submit" name="book_id" value="{{ x['book_id'] }}" class="add-project">Update Record</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    
+
+    {% for x in data %}
+        <div id="delete_book{{ x['book_id'] }}" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header login-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h4 class="modal-title">Confirmation !</h4>
+                    </div>
+                    <form method="POST" action="{{ url_for('delete_book') }}">
+                        <div class="modal-body">
+                            <p style="color: black; font-size: 22px;"> Are you sure you want to Delete this Book?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="cancel" data-dismiss="modal">Cancel</button>
+                            <button type="submit" name="book_id" value="{{ x['book_id'] }}" class="btn btn-danger" style="border-radius: 100px; font-size: 14px; font-weight: 600; padding: 10px 27px 10px 45px;position: relative;">Yes Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+
+{% endblock %}

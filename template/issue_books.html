@@ -1,0 +1,121 @@
+<title>Manage Members</title>
+{% extends 'parent.html'%}
+
+{% block nav_issue_books %} class = "active" {% endblock %}
+
+{% block content %}
+    <br>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="width:30%; margin-left: 20px;">
+                    <span>{{ message }}</span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="user-dashboard">
+        <form method="POST" action="{{ url_for('issue_book') }}">
+            <div class="row">
+                <div class="col-md-12 col-sm-7 col-xs-12 gutter">
+                    <div class="sales report">
+                        <h2>Issue Books</h2>
+                        <div class="btn-group col-md-10">
+                            <ul class="list-inline header-top col-md-7 ml-auto">
+                                <li class="hidden-xs">
+                                    <select name="book_id" class="form-control form-control-md">
+                                        <option value="select"><-- Select Book --></option>
+                                        {% for x in data %}
+                                            <option value="{{ x['book_id'] }}">{{ x['book_id'] }} - {{ x['title'] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </li>
+                            </ul>
+
+                            <ul class="list-inline header-top col-md-3 ml-auto">
+                                <li class="hidden-xs" > 
+                                    <select name="member_id" class="form-control form-control-md">
+                                        <option value="select"><-- Select Member --></option>
+                                        {% for x in data1 %}
+                                            <option value="{{ x['member_id'] }}">{{ x['member_id'] }} - {{ x['m_name'] }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </li>
+                            </ul>
+
+                            <ul class="list-inline header-top">
+                                <li class="hidden-xs"><button type="submit" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true" style="color: white;"></i> <b>Issue Book</b></a></li> 
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <br>
+    <table class="table-member table table-hover table-responsive-lg table-bordered">
+        <thead class="thead-dark">
+            <th scope="col">Transaction Id</th>
+            <th scope="col">Book Title</th>
+            <th scope="col">Member Name</th>
+            <th scope="col" >Issue Date</th>
+            <th scope="col">Return Date</th>
+            <th scope="col">Rent</th>
+            <th scope="col" style="text-align: center;">Outstanding Amount</th>
+            <th scope="col" style="text-align: center;">Rent Paid</th>
+            <th scope="col" style="text-align: center;">Book Return</th>
+        </thead>
+            
+        <tbody>
+            {% for x in data3 %}
+                <tr>
+                    <td>{{ x['t_id'] }}</td>
+                    
+                         
+                        <td>{{ x['title'] }}</td>
+                        <td>{{ x['m_name'] }}</td>
+                   
+                    
+                    <td class="text-nowrap">{{ x['issue_date'] }}</td>
+
+                    {% if x['return_date'] == None %}
+                        <td align="center"><button type="button" name="update" class="btn btn-warning btn-md">NIL</button></td>    
+                    {% else %}
+                        <td align="center">{{ x['return_date'] }}</td>
+                    {% endif %}
+
+
+
+                    {% if x['rent'] == 0 %}
+                        <td align="center"><button type="button" name="update" class="btn btn-warning btn-md">NIL</button></td>    
+                    {% else %}
+                        <td align="center"><button type="button" name="update" class="btn btn-success btn-md">{{ x['rent'] }}</button></td>    
+                    {% endif %}
+
+
+
+                    {% if x['outstanding_amount']==0 %}
+                    <td align="center"><button type="button" name="update" class="btn btn-success btn-md">NIL</button></td>
+                    {% else %}
+                    <td align="center"><button type="button" name="update" class="btn btn-warning btn-md">{{ x['outstanding_amount'] }}</button></td>
+                    {% endif %}
+
+                    {% if x['rent_paid'] == "no" %}
+                        <td align="center"><button type="button" name="delete" class="btn btn-danger" style="border-radius: 20px;"><i class="fa fa-times circle-icon" aria-hidden="true"></i></button></td>
+                    {% else %}
+                        <td align="center"><button type="button" name="delete" class="btn btn-success" style="border-radius: 20px;"><i class="fa fa-check circle-icon" aria-hidden="true"></i></button></td>
+                    {% endif %}
+
+                    <td align="center"><button type="submit" name="delete" class="btn btn-success" style="border-radius: 20px;"><i class="fa fa-undo circle-icon" aria-hidden="true"></i></button></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+{% endblock %}
