@@ -64,20 +64,55 @@
             <th scope="col">Transaction Id</th>
             <th scope="col">Book Title</th>
             <th scope="col">Member Name</th>
+            <th scope="col" >Issue Date</th>
+            <th scope="col">Return Date</th>
             <th scope="col">Rent</th>
-            <th scope="col" style="text-align: center;">Outstanding</th>
-            <th scope="col" style="text-align: center;">Return</th>
+            <th scope="col" style="text-align: center;">Outstanding Amount</th>
+            <th scope="col" style="text-align: center;">Rent Paid</th>
+            <th scope="col" style="text-align: center;">Book Return</th>
         </thead>
             
         <tbody>
             {% for x in data3 %}
                 <tr>
                     <td>{{ x['t_id'] }}</td>
-                    <td>{{ x['title'] }}</td>
-                    <td>{{ x['m_name'] }}</td>
-                    <td>{{ x['rent'] }}</td>
-                    <td style="text-align: center;"><button type="submit" name="update" class="btn btn-warning btn-md" style="border-radius: 20px;"><i class="fa fa-pencil-square-o circle-icon" aria-hidden="true"></i></button></td>
-                    <td style="text-align: center;"><button type="submit" name="delete" class="btn btn-success btn-md" style="border-radius: 20px;"><i class="fa fa-undo circle-icon" aria-hidden="true"></i></button></td>
+                    
+                         
+                        <td>{{ x['title'] }}</td>
+                        <td>{{ x['m_name'] }}</td>
+                   
+                    
+                    <td class="text-nowrap">{{ x['issue_date'] }}</td>
+
+                    {% if x['return_date'] == None %}
+                        <td align="center"><button type="button" name="update" class="btn btn-warning btn-md">NIL</button></td>    
+                    {% else %}
+                        <td align="center">{{ x['return_date'] }}</td>
+                    {% endif %}
+
+
+
+                    {% if x['rent'] == 0 %}
+                        <td align="center"><button type="button" name="update" class="btn btn-warning btn-md">NIL</button></td>    
+                    {% else %}
+                        <td align="center"><button type="button" name="update" class="btn btn-success btn-md">{{ x['rent'] }}</button></td>    
+                    {% endif %}
+
+
+
+                    {% if x['outstanding_amount']==0 %}
+                    <td align="center"><button type="button" name="update" class="btn btn-success btn-md">NIL</button></td>
+                    {% else %}
+                    <td align="center"><button type="button" name="update" class="btn btn-warning btn-md">{{ x['outstanding_amount'] }}</button></td>
+                    {% endif %}
+
+                    {% if x['rent_paid'] == "no" %}
+                        <td align="center"><button type="button" name="delete" class="btn btn-danger" style="border-radius: 20px;"><i class="fa fa-times circle-icon" aria-hidden="true"></i></button></td>
+                    {% else %}
+                        <td align="center"><button type="button" name="delete" class="btn btn-success" style="border-radius: 20px;"><i class="fa fa-check circle-icon" aria-hidden="true"></i></button></td>
+                    {% endif %}
+
+                    <td align="center"><button type="submit" name="delete" class="btn btn-success" style="border-radius: 20px;"><i class="fa fa-undo circle-icon" aria-hidden="true"></i></button></td>
                 </tr>
             {% endfor %}
         </tbody>

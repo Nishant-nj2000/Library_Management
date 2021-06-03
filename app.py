@@ -8,7 +8,7 @@ import string
 import requests
 import json
 from datetime import datetime
-
+from datetime import date
 
 app = Flask(__name__,template_folder = 'template')
 
@@ -155,9 +155,15 @@ def delete_member():
 
 @app.route('/issue_books_page_load')
 def issue_books_page_load():
+	book_id = mysql_query("SELECT book_id from transactions")
+	print(book_id)
+	member_id = mysql_query("SELECT member_id from transactions")
+	print(member_id)
+	result = mysql_query("SELECT b.title,m.m_name from books b,member m,transactions t where b.book_id = t.book_id and m.member_id = t.member_id and b.book_id = '{}' and m.member_id = '{}'".format(book_id,member_id))
+	print(result)
 	data = mysql_query("SELECT book_id,title from books")
 	data1 = mysql_query("SELECT member_id,m_name from members")
-	data3 = mysql_query("SELECT * from transactions")
+	data3 = mysql_query("SELECT * from transactions")	
 	return render_template('issue_books.html',data=data,data1=data1,data3=data3)
 
 @app.route('/issue_book',methods=['POST'])
@@ -165,9 +171,8 @@ def issue_book():
 	if request.method == 'POST':
 		book_id = request.form['book_id']
 		member_id = request.form['member_id']
-		datax = mysql_query("SELECT title from books where book_id = '{}'".format(book_id))
-		datay = mysql_query("SELECT m_name from members where member_id = '{}'".format(member_id))
-		mysql_query("INSERT into transactions(book_id,title,member_id,m_name) values ('{}','{}','{}','{}')".format(book_id,datax[0]['title'],member_id,datay[0]['m_name']))
+		issue_date = date.today()
+		mysql_query("INSERT into transactions(book_id,member_id,issue_date) values ('{}','{}','{}')".format(book_id,member_id,issue_date))
 	return redirect(url_for('issue_books_page_load'))
 
 if __name__ == "__main__":
