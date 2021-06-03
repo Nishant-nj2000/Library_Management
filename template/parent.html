@@ -41,8 +41,7 @@
                                 <li {% block nav_home %} {% endblock %}><a href="{{url_for('main')}}"><i class="fa fa-home" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Home</span></a></li>
                                 <li {% block nav_manage_books %} {% endblock %}><a href="{{url_for('manage_books')}}"><i class="fa fa-edit" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Manage Books</span></a></li>
                                 <li {% block nav_manage_members %} {% endblock %}><a href="{{url_for('manage_members')}}"><i class="fa fa-edit" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Manage Members</span></a></li>
-                                <li {% block nav_issue_books %} {% endblock %}><a href="#"><i class="fa fa-book" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Issue Books</span></a></li>
-                                <li {% block nav_issued_books %} {% endblock %}><a href="#"><i class="fa fa-book" aria-hidden="true"></i><span class="hidden-xs hidden-sm">View Issued Books</span></a></li>
+                                <li {% block nav_issue_books %} {% endblock %}><a href="{{url_for('issue_books_page_load')}}"><i class="fa fa-book" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Issue Books</span></a></li>
                             </ul>
                         </div>
                     </div>
@@ -66,7 +65,7 @@
                                 <div class="col-md-12">
                                     <div class="header-rightside">
                                         <ul class="list-inline header-top my-2 my-lg-0 ml-auto">
-                                            <li class="hidden-xs"> <h3>Hello Admin</h3> </li>
+                                            <li class="hidden-xs"> <h3>Welcome</h3> </li>
                                             <li class="hidden-xs" style="float: right;"><a href="#" class="btn btn-danger btn-md">Logout</a></li>
                                         </ul>
                                     </div>

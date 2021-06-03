@@ -74,7 +74,35 @@ def main():
 
 @app.route('/manage_books')
 def manage_books():
-    return render_template('manage_books.html')
+	data = mysql_query("SELECT * from books")
+	data1 = mysql_query("SELECT language_code from books")
+	return render_template('manage_books.html',data=data,data1=data1)
+
+@app.route('/update_book', methods=['POST'])
+def update_book():
+	if request.method == 'POST':
+		book_id = request.form['book_id']
+		title = request.form['title']
+		average_rating = request.form['average_rating']
+		authors = request.form['authors']
+		language_code = request.form['language_code']
+		publication_date = request.form['publication_date']
+		publisher = request.form['publisher']
+		stock = request.form['stock']
+		mysql_query("UPDATE books set title = '{}', average_rating = '{}', authors = '{}', language_code = '{}', publication_date = '{}', publisher = '{}', stock = '{}' where book_id = '{}'".format(title,average_rating,authors,language_code,publication_date,publisher,stock,book_id))
+		flash("Book Updated Successfuly !",'success')
+	data = mysql_query("SELECT * from books")
+	return render_template('manage_books.html',data=data)
+
+@app.route('/delete_book')
+def delete_book():
+	if request.method == 'POST':
+		book_id = request.form['book_id']
+		mysql_query("DELETE from books where book_id = '{}'".format(book_id))
+		flash("Book Deleted Successfuly !",'warning')
+	data = mysql_query("SELECT * from books")
+	return render_template('manage_books.html',data=data)
+
 
 @app.route('/manage_members')
 def manage_members():
@@ -89,17 +117,62 @@ def add_member():
 		email_id = request.form['email_id']
 		m_address = request.form['address']
 		
-		account = mysql_query("SELECT email_id,mobile from members where email_id='{}' OR mobile='{}'".format(email_id,mobile))
-		if account:
-			flash('Member Already Exists', 'danger')
-		else:
+		account = mysql_query("SELECT member_id from members where email_id='{}' OR mobile='{}'".format(email_id,mobile))
+		print(account)
+		if len(account) == 0:
 			mysql_query("INSERT INTO members(m_name,mobile,email_id,m_address) values ('{}', '{}', '{}', '{}')".format(m_name,mobile,email_id,m_address))
-			flash("Member Added Successfully !",'info')
+			flash("Member Added Successfully !",'info')	
+		else:
+			flash('Member Already Exists', 'danger')
+			data = mysql_query("SELECT * from members")
+			return render_template('manage_members.html',data=data)
 	elif request.method == 'POST':
 		flash('Please fill the form !','error')
-
 	data = mysql_query("SELECT * from members")
 	return render_template('manage_members.html',data=data)
+
+@app.route('/update_member',methods=['POST'])
+def update_member():
+	if request.method == 'POST':
+		member_id = request.form['member_id']
+		m_name = request.form['m_name']
+		mobile = request.form['mobile']
+		email_id = request.form['email_id']
+		m_address = request.form['address']
+		mysql_query("UPDATE members set m_name = '{}', mobile = '{}', email_id = '{}', m_address = '{}' where member_id = '{}'".format(m_name,mobile,email_id,m_address,member_id))
+		flash("Member Updated Successfuly !",'success')
+	data = mysql_query("SELECT * from members")
+	return render_template('manage_members.html',data=data)
+
+@app.route('/delete_member',methods=['POST'])
+def delete_member():
+	if request.method == 'POST':
+		member_id = request.form['member_id']
+		mysql_query("DELETE from members where member_id = '{}'".format(member_id))
+		flash("Member Deleted Successfuly !",'warning')
+	data = mysql_query("SELECT * from members")
+	return render_template('manage_members.html',data=data)
+
+@app.route('/issue_books_page_load')
+def issue_books_page_load():
+	data = mysql_query("SELECT book_id,title from books")
+	data1 = mysql_query("SELECT member_id,m_name from members")
+	data3 = mysql_query("SELECT * from transactions")
+	return render_template('issue_books.html',data=data,data1=data1,data3=data3)
+
+@app.route('/issue_book',methods=['POST'])
+def issue_book():
+	if request.method == 'POST':
+		book_id = request.form['book_id']
+		member_id = request.form['member_id']
+		data = mysql_query("SELECT title from books where book_id = '{}'".format(book_id))
+		print(data)
+		data1 = mysql_query("SELECT m_name from members where member_id = '{}'".format(member_id))
+		print(data1)
+		mysql_query("INSERT into transactions(book_id,title,member_id,m_name) values ('{}','{}','{}','{}')".format(book_id,data,member_id,data1))
+		print(mysql_query)
+	data3 = mysql_query("SELECT * from transactions")
+	return render_template('issue_books.html',data3=data3)
 
 if __name__ == "__main__":
 	app.run(port='8000', debug=True)

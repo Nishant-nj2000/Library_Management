@@ -6,6 +6,15 @@ a:focus,a:hover,a{
     outline:none;
     text-decoration: none;
 }
+.circle-icon {
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+    text-align: center;
+    padding: 5px 1px 5px 1px;
+}
+
 li,ul{
     list-style: none;
     padding: 0;
@@ -23,9 +32,9 @@ li,ul{
 
 .table-member
 {
-    margin-left: 20px;
+    margin-left: 23px;
     border-radius: 8px;
-    width: 97%;
+    width: 96.8%;
     margin-right: 0px;
     padding-right: 0px;
 }
@@ -244,6 +253,17 @@ li,ul{
     position: relative;
 }
 
+.delete-button
+{
+    background: #dc3545 none repeat scroll 0 0;
+    border-radius: 100px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 27px 10px 45px;
+    position: relative;
+}
+
 .header-rightside .nav > li > a:focus,
 .header-rightside .nav > li > a:hover {
     background: none;
@@ -434,7 +454,7 @@ header {
     padding-right: 0px;
     width: 100%;
 }
-.sales button {
+.sales btn-sales {
     background: #c9c8c8 none repeat scroll 0 0;
     border: 1px solid #0e1a35;
     border-radius: 100px;
@@ -467,8 +487,8 @@ header {
 }
 .sales .dropdown-menu{
     border: 0px;
-    margin-left: 16px;
-    width: 86%;
+    margin-left: 0px;
+    width: 93.5%;
     background-color:#23272b;
     margin-top: 0px;
     border-radius: 0px 0px 7px 7px;
@@ -506,6 +526,15 @@ header {
     text-shadow: none;
 }
 .modal-body input {
+    border: 1px solid #d4d9e3;
+    font-size: 14px;
+    font-weight: 300;
+    margin: 5px 0;
+    padding: 14px 10px;
+    width: 100%;
+    color: #8492af;
+}
+.modal-body select {
     border: 1px solid #d4d9e3;
     font-size: 14px;
     font-weight: 300;
