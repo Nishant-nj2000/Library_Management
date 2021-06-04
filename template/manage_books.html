@@ -43,14 +43,12 @@
                     <button type="button" class="close" data-dismiss="modal">×</button>
                     <h4 class="modal-title">Import Books</h4>
                 </div>
-                <form method="POST" action="" name="import_books">
+                <form method="POST" action="{{url_for('import_book')}}">
                     <div class="modal-body">
                         <input type="number" min="1" placeholder="Enter No. of Records to import" name="no_of_records">
-                        <p>Import Using</p>
+                        <p>Or Import Using ↓</p>
                         <input type="text" placeholder="Book Title" name="title">
-                        <input type="number" min="1" placeholder="No. of Pages" name="num_pages">
                         <input type="text" placeholder="Book Authors" name="authors">
-                        <input type="text" placeholder="ISBN" name="isbn">
                         <input type="text" placeholder="Publisher" name="publisher">
                     </div>
 
