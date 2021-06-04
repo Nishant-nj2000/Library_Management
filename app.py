@@ -9,6 +9,7 @@ import requests
 import json
 from datetime import datetime
 from datetime import date
+import math
 
 app = Flask(__name__,template_folder = 'template')
 
@@ -50,43 +51,43 @@ def mysql_query(sql):
 # --> mysql_query(" select * from user_master where emailid='{}';".format(email))
 #################################################################
 
-
-
-
-# @app.route('/temp')
-# def temp():
-# 	data = requests.get("https://frappe.io/api/method/frappe-library").json()
-# 	cursor = connection.cursor()
-# 	for a in data:
-# 		for i in range(0,20):
-# 			sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"	
-			
-# 			timestring = datetime.strptime(data['message'][i]['publication_date'],'%m/%d/%Y')
-			
-# 			dt = (data['message'][i]['bookID'],data['message'][i]['title'],data['message'][i]['authors'],data['message'][i]['average_rating'],data['message'][i]['isbn'],data['message'][i]['isbn13'],data['message'][i]['language_code'],data['message'][i]['  num_pages'],timestring,data['message'][i]['publisher'],data['message'][i]['ratings_count'],data['message'][i]['text_reviews_count'])
-# 			cursor.execute(sql,dt)
-# 	connection.commit()		
-# 	return render_template('parent.html')
 	
 @app.route('/')
 def main():
-    return render_template('index.html')
+	return render_template('index.html')
 
 @app.route('/import_book', methods=['POST'])
 def import_book():
-    if request.method == 'POST':
-    	no_of_records = request.form['no_of_records']
+	if request.method == 'POST':
+		no_of_records = request.form['no_of_records']
+		converted_no_of_records = int(no_of_records)
 		title = request.form['title']
 		authors = request.form['authors']
+		isbn = request.form['isbn']
 		publisher = request.form['publisher']
-		data = requests.get("https://frappe.io/api/method/frappe-library").json()
-		for a in data:
-    		for i in range(0,20):
-				data2 = mysql_query("INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")	
-				timestring = datetime.strptime(data['message'][i]['publication_date'],'%m/%d/%Y')
-				data2 = (data['message'][i]['bookID'],data['message'][i]['title'],data['message'][i]['authors'],data['message'][i]['average_rating'],data['message'][i]['isbn'],data['message'][i]['isbn13'],data['message'][i]['language_code'],data['message'][i]['  num_pages'],timestring,data['message'][i]['publisher'],data['message'][i]['ratings_count'],data['message'][i]['text_reviews_count'])
-			
+		list1 = []
+		page = (int(converted_no_of_records)/20)
+		rounded_value = math.ceil(page)
+		api_data = "https://frappe.io/api/method/frappe-library"
+		parameters = {'page':converted_no_of_records,'title':title,'authors':authors,'isbn':isbn,'publisher':publisher}
 
+		#using loop for inserting n number of records 
+		for a in range(0,rounded_value):
+			list2 = []
+			request_data = requests.get(url=api_data,params=parameters)
+			list2 = request_data.json()
+			list1.append(list2)
+		for a in list1:
+			for b in range(0,converted_no_of_records):
+				book_id = a['message'][b]['bookID']
+				data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
+				if len(data_check) == 0:
+					timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
+					mysql_query("INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count']))		
+				else:
+					mysql_query("UPDATE books set stock = stock + '{}' where book_id = '{}'".format(1,book_id))
+			flash("Books Imported Successfully !",'success')
+		return redirect(url_for('manage_books'))	 
 
 
 @app.route('/manage_books')
@@ -110,7 +111,7 @@ def update_book():
 	data = mysql_query("SELECT * from books")
 	return render_template('manage_books.html',data=data)
 
-@app.route('/delete_book')
+@app.route('/delete_book', methods=['POST'])
 def delete_book():
 	if request.method == 'POST':
 		book_id = request.form['book_id']
