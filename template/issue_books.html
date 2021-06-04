@@ -36,7 +36,7 @@
                                     </select>
                                 </li>
                             </ul>
-
+                            
                             <ul class="list-inline header-top col-md-3 ml-auto">
                                 <li class="hidden-xs" > 
                                     <select name="member_id" class="form-control form-control-md">
@@ -48,6 +48,10 @@
                                 </li>
                             </ul>
 
+                            {% for x in data3 %}
+                                <input type="hidden" name="outstanding_amount" value="{{ x['outstanding_amount'] }}">
+                            {% endfor %}
+                            
                             <ul class="list-inline header-top">
                                 <li class="hidden-xs"><button type="submit" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true" style="color: white;"></i> <b>Issue Book</b></a></li> 
                             </ul>
@@ -66,7 +70,7 @@
             <th scope="col">Member Name</th>
             <th scope="col" >Issue Date</th>
             <th scope="col">Return Date</th>
-            <th scope="col">Rent</th>
+            <th scope="col">Rent Amount</th>
             <th scope="col" style="text-align: center;">Outstanding Amount</th>
             <th scope="col" style="text-align: center;">Rent Paid</th>
             <th scope="col" style="text-align: center;">Book Return</th>
@@ -76,46 +80,104 @@
             {% for x in data3 %}
                 <tr>
                     <td>{{ x['t_id'] }}</td>
-                    
-                         
-                        <td>{{ x['title'] }}</td>
-                        <td>{{ x['m_name'] }}</td>
-                   
-                    
+                    <td>{{ x['title'] }}</td>
+                    <td>{{ x['m_name'] }}</td>
                     <td class="text-nowrap">{{ x['issue_date'] }}</td>
 
                     {% if x['return_date'] == None %}
-                        <td align="center"><button type="button" name="update" class="btn btn-warning btn-md">NIL</button></td>    
+                        <td align="center"><button type="button" name="return_date" class="btn btn-warning btn-md">NIL</button></td>    
                     {% else %}
-                        <td align="center">{{ x['return_date'] }}</td>
+                        <td nowrap align="center">{{ x['return_date'] }}</td>
                     {% endif %}
-
-
 
                     {% if x['rent'] == 0 %}
-                        <td align="center"><button type="button" name="update" class="btn btn-warning btn-md">NIL</button></td>    
+                        <td align="center"><button type="button" name="rent" class="btn btn-warning btn-md">NIL</button></td>    
                     {% else %}
-                        <td align="center"><button type="button" name="update" class="btn btn-success btn-md">{{ x['rent'] }}</button></td>    
+                        <td align="center">{{ x['rent'] }}</td>    
                     {% endif %}
 
-
-
                     {% if x['outstanding_amount']==0 %}
-                    <td align="center"><button type="button" name="update" class="btn btn-success btn-md">NIL</button></td>
+                    <td align="center"><button type="button" name="outstanding_amount" class="btn btn-success btn-md">NIL</button></td>
                     {% else %}
-                    <td align="center"><button type="button" name="update" class="btn btn-warning btn-md">{{ x['outstanding_amount'] }}</button></td>
+                    <td align="center"><button type="button" name="outstanding_amount" class="btn btn-warning btn-md" data-toggle="modal" data-target="#outstanding_settlement{{ x['t_id'] }}">{{ x['outstanding_amount'] }}</button></td>
                     {% endif %}
 
                     {% if x['rent_paid'] == "no" %}
-                        <td align="center"><button type="button" name="delete" class="btn btn-danger" style="border-radius: 20px;"><i class="fa fa-times circle-icon" aria-hidden="true"></i></button></td>
+                        <td align="center"><button type="button" name="rent_paid" class="btn btn-danger" style="border-radius: 20px;" disabled><i class="fa fa-times circle-icon" aria-hidden="true"></i></button></td>
                     {% else %}
-                        <td align="center"><button type="button" name="delete" class="btn btn-success" style="border-radius: 20px;"><i class="fa fa-check circle-icon" aria-hidden="true"></i></button></td>
+                        <td align="center"><button type="button" name="rent_paid" class="btn btn-success" style="border-radius: 20px;" disabled><i class="fa fa-check circle-icon" aria-hidden="true"></i></button></td>
                     {% endif %}
 
-                    <td align="center"><button type="submit" name="delete" class="btn btn-success" style="border-radius: 20px;"><i class="fa fa-undo circle-icon" aria-hidden="true"></i></button></td>
+                    {% if x['return_date'] == None %}
+                        <td nowrap align="center"><button type="button" name="return_date" class="btn btn-info btn-md w-100" data-toggle="modal" data-target="#book_return{{ x['t_id'] }}"><i class="fa fa-undo" aria-hidden="true"></i> Return  </button></td>
+                    {% else %}
+                        <td nowrap align="center"><button type="button" name="return_date" class="btn btn-success btn-md"><i class="fa fa-check" aria-hidden="true"></i> Returned</button></td>
+                    {% endif %}
+
                 </tr>
             {% endfor %}
         </tbody>
     </table>
     
+
+    {% for x in data3 %}
+        <div id="book_return{{ x['t_id'] }}" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header login-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h4 class="modal-title">Book Return</h4>
+                    </div>
+                    <form method="POST" action="{{url_for('book_return')}}">
+                        <div class="modal-body">
+                            <input type="text" name="title" value="{{ x['title'] }}" readonly>
+                            <input type="text" name="m_name" value="{{ x['m_name'] }}" readonly>
+                            <input type="text" pattern="[0-9]+" name="rent" placeholder="Rent Amount">
+                            <select name="rent_paid">
+                                <option value="Select">-- Amount Paid ? --</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select> 
+                            <input type="hidden" name="book_id" value="{{ x['book_id'] }}">  
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="cancel" data-dismiss="modal">Close</button>
+                            <button type="submit" name="t_id" value="{{ x['t_id'] }}" class="add-project">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    
+    {% for x in data3 %}
+        <div id="outstanding_settlement{{ x['t_id'] }}" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header login-header">
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                        <h4 class="modal-title">Outstanding Amount Settlement</h4>
+                    </div>
+                    <form method="POST" action="{{url_for('outstanding_settlement')}}">
+                        <div class="modal-body">
+                            <input type="text" name="title" value="{{ x['title'] }}" readonly>
+                            <input type="text" name="member_id" value="{{ x['member_id'] }}" readonly>
+                            <input type="text" name="m_name" value="{{ x['m_name'] }}" readonly>
+                            <input type="hidden" name="outstanding_amount" value="{{ x['outstanding_amount'] }}">
+                            <input type="hidden" name="m_name" value="{{ x['m_name'] }}">
+                            <input type="hidden" name="book_id" value="{{ x['book_id'] }}">  
+                            <input type="number" name="rent_amount" min="0" max="{{ x['outstanding_amount'] }}" placeholder="Rent amount to be paid">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="cancel" data-dismiss="modal">Close</button>
+                            <button type="submit" name="t_id" value="{{ x['t_id'] }}" class="add-project">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
 {% endblock %}

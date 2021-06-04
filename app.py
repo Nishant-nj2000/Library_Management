@@ -9,6 +9,7 @@ import requests
 import json
 from datetime import datetime
 from datetime import date
+import math
 
 app = Flask(__name__,template_folder = 'template')
 
@@ -50,27 +51,44 @@ def mysql_query(sql):
 # --> mysql_query(" select * from user_master where emailid='{}';".format(email))
 #################################################################
 
-
-
-
-# @app.route('/temp')
-# def temp():
-# 	data = requests.get("https://frappe.io/api/method/frappe-library").json()
-# 	cursor = connection.cursor()
-# 	for a in data:
-# 		for i in range(0,20):
-# 			sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"	
-			
-# 			timestring = datetime.strptime(data['message'][i]['publication_date'],'%m/%d/%Y')
-			
-# 			dt = (data['message'][i]['bookID'],data['message'][i]['title'],data['message'][i]['authors'],data['message'][i]['average_rating'],data['message'][i]['isbn'],data['message'][i]['isbn13'],data['message'][i]['language_code'],data['message'][i]['  num_pages'],timestring,data['message'][i]['publisher'],data['message'][i]['ratings_count'],data['message'][i]['text_reviews_count'])
-# 			cursor.execute(sql,dt)
-# 	connection.commit()		
-# 	return render_template('parent.html')
 	
 @app.route('/')
 def main():
-    return render_template('index.html')
+	return render_template('index.html')
+
+@app.route('/import_book', methods=['POST'])
+def import_book():
+	if request.method == 'POST':
+		no_of_records = request.form['no_of_records']
+		converted_no_of_records = int(no_of_records)
+		title = request.form['title']
+		authors = request.form['authors']
+		isbn = request.form['isbn']
+		publisher = request.form['publisher']
+		list1 = []
+		page = (int(converted_no_of_records)/20)
+		rounded_value = math.ceil(page)
+		api_data = "https://frappe.io/api/method/frappe-library"
+		parameters = {'page':converted_no_of_records,'title':title,'authors':authors,'isbn':isbn,'publisher':publisher}
+
+		#using loop for inserting n number of records 
+		for a in range(0,rounded_value):
+			list2 = []
+			request_data = requests.get(url=api_data,params=parameters)
+			list2 = request_data.json()
+			list1.append(list2)
+		for a in list1:
+			for b in range(0,converted_no_of_records):
+				book_id = a['message'][b]['bookID']
+				data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
+				if len(data_check) == 0:
+					timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
+					mysql_query("INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count']))		
+				else:
+					mysql_query("UPDATE books set stock = stock + '{}' where book_id = '{}'".format(1,book_id))
+			flash("Books Imported Successfully !",'success')
+		return redirect(url_for('manage_books'))	 
+
 
 @app.route('/manage_books')
 def manage_books():
@@ -88,13 +106,12 @@ def update_book():
 		language_code = request.form['language_code']
 		publication_date = request.form['publication_date']
 		publisher = request.form['publisher']
-		stock = request.form['stock']
-		mysql_query("UPDATE books set title = '{}', average_rating = '{}', authors = '{}', language_code = '{}', publication_date = '{}', publisher = '{}', stock = '{}' where book_id = '{}'".format(title,average_rating,authors,language_code,publication_date,publisher,stock,book_id))
+		mysql_query("UPDATE books set title = '{}', average_rating = '{}', authors = '{}', language_code = '{}', publication_date = '{}', publisher = '{}' where book_id = '{}'".format(title,average_rating,authors,language_code,publication_date,publisher,book_id))
 		flash("Book Updated Successfuly !",'success')
 	data = mysql_query("SELECT * from books")
 	return render_template('manage_books.html',data=data)
 
-@app.route('/delete_book')
+@app.route('/delete_book', methods=['POST'])
 def delete_book():
 	if request.method == 'POST':
 		book_id = request.form['book_id']
@@ -118,7 +135,6 @@ def add_member():
 		m_address = request.form['address']
 		
 		account = mysql_query("SELECT member_id from members where email_id='{}' OR mobile='{}'".format(email_id,mobile))
-		print(account)
 		if len(account) == 0:
 			mysql_query("INSERT INTO members(m_name,mobile,email_id,m_address) values ('{}', '{}', '{}', '{}')".format(m_name,mobile,email_id,m_address))
 			flash("Member Added Successfully !",'info')	
@@ -155,24 +171,61 @@ def delete_member():
 
 @app.route('/issue_books_page_load')
 def issue_books_page_load():
-	book_id = mysql_query("SELECT book_id from transactions")
-	print(book_id)
-	member_id = mysql_query("SELECT member_id from transactions")
-	print(member_id)
-	result = mysql_query("SELECT b.title,m.m_name from books b,member m,transactions t where b.book_id = t.book_id and m.member_id = t.member_id and b.book_id = '{}' and m.member_id = '{}'".format(book_id,member_id))
-	print(result)
 	data = mysql_query("SELECT book_id,title from books")
 	data1 = mysql_query("SELECT member_id,m_name from members")
-	data3 = mysql_query("SELECT * from transactions")	
+	data3 = mysql_query("SELECT t.*,b.title,m.m_name from transactions t, books b, members m where b.book_id = t.book_id and m.member_id = t.member_id order by t.t_id DESC")	
 	return render_template('issue_books.html',data=data,data1=data1,data3=data3)
 
 @app.route('/issue_book',methods=['POST'])
 def issue_book():
 	if request.method == 'POST':
 		book_id = request.form['book_id']
-		member_id = request.form['member_id']
+		member_id = request.form['member_id']		
 		issue_date = date.today()
-		mysql_query("INSERT into transactions(book_id,member_id,issue_date) values ('{}','{}','{}')".format(book_id,member_id,issue_date))
+		record = mysql_query("SELECT b.stock,t.book_id,t.member_id,t.return_date,t.outstanding_amount from transactions t, books b where b.book_id = t.book_id and t.book_id = '{}' and t.member_id = '{}'".format(book_id,member_id))
+		total_outstandings = mysql_query("SELECT sum(outstanding_amount) as total_outstandings from transactions where member_id = '{}' group by member_id".format(member_id))
+		print(total_outstandings)
+		if len(record) != 0 and record[0]['return_date'] == None :
+			flash("Book already issued !" ,'info')
+		elif len(record) != 0 and record[0]['stock'] == 0:
+			flash("Book is Out of Stock" ,'danger')
+		elif len(total_outstandings) != 0 and total_outstandings[0]['total_outstandings']:
+			flash("Total Outstandings Exceeds ₹500" ,'danger')
+		else:
+			mysql_query("UPDATE books set stock = stock - {} where book_id = '{}'".format(1,book_id))
+			mysql_query("INSERT into transactions(book_id,member_id,issue_date) values ('{}','{}','{}')".format(book_id,member_id,issue_date))
+	return redirect(url_for('issue_books_page_load'))
+
+@app.route('/book_return',methods=['POST'])
+def book_return():
+	if request.method == 'POST':
+		rent = request.form['rent']
+		rent_paid = request.form['rent_paid']
+		return_date = date.today()
+		t_id = request.form['t_id']
+		if rent_paid == "yes":
+			mysql_query("UPDATE transactions t inner join members m on t.member_id = m.member_id set t.outstanding_amount = '{}', t.return_date = '{}', t.rent = '{}', t.rent_paid = '{}' where t.t_id = '{}'".format(0,return_date,rent,rent_paid,t_id))
+		else:
+			mysql_query("UPDATE transactions t inner join members m on t.member_id = m.member_id set t.outstanding_amount = '{}', t.return_date = '{}', t.rent = '{}', t.rent_paid = '{}' where t.t_id = '{}'".format(rent,return_date,rent,rent_paid,t_id))
+		return redirect(url_for('issue_books_page_load'))
+
+@app.route('/outstanding_settlement',methods=['POST'])
+def outstanding_settlement():
+	if request.method == 'POST':
+		t_id = request.form['t_id']
+		book_id = request.form['book_id']
+		member_id = request.form['member_id']
+		m_name = request.form['m_name']
+		outstanding_amount = request.form['outstanding_amount']
+		rent_amount = request.form['rent_amount']
+		new_amount = int(outstanding_amount) - int(rent_amount)
+		if new_amount == 0:
+			mysql_query("UPDATE transactions t inner join members m on t.member_id = m.member_id set t.outstanding_amount = '{}', t.rent_paid = '{}' where m.member_id = '{}' and  t.t_id = '{}'".format(new_amount,'yes',member_id,t_id))
+			mysql_query("UPDATE books set stock = stock + {} where book_id = '{}'".format(1,book_id))
+			flash("Outstanding Amount Cleared for " +m_name ,'success')
+		else:
+			mysql_query("UPDATE transactions set outstanding_amount = '{}' where member_id = '{}' and t_id = '{}'".format(new_amount,member_id,t_id))
+			flash("Adjustments done for " +m_name ,'info')
 	return redirect(url_for('issue_books_page_load'))
 
 if __name__ == "__main__":

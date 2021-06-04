@@ -43,12 +43,11 @@
                     <button type="button" class="close" data-dismiss="modal">×</button>
                     <h4 class="modal-title">Import Books</h4>
                 </div>
-                <form method="POST" action="" name="import_books">
+                <form method="POST" action="{{url_for('import_book')}}">
                     <div class="modal-body">
                         <input type="number" min="1" placeholder="Enter No. of Records to import" name="no_of_records">
-                        <p>Import Using</p>
+                        <p>Or Import Using ↓</p>
                         <input type="text" placeholder="Book Title" name="title">
-                        <input type="number" min="1" placeholder="No. of Pages" name="num_pages">
                         <input type="text" placeholder="Book Authors" name="authors">
                         <input type="text" placeholder="ISBN" name="isbn">
                         <input type="text" placeholder="Publisher" name="publisher">
@@ -56,7 +55,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="cancel" data-dismiss="modal">Close</button>
-                        <button type="submit" class="add-project">Import</button>
+                        <button type="submit" name="import" class="add-project">Import</button>
                     </div>
                 </form>
             </div>
@@ -107,7 +106,7 @@
                     </div>
                     <form method="POST" action="{{url_for('update_book')}}" name="update_book">
                         <div class="modal-body">
-                            <input type="text" placeholder="Book Title" name="title" value="{{ x['title'] }}">
+                            <textarea placeholder="Book Title" name="title">{{ x['title'] }}</textarea>
                             <input type="number" placeholder="Average Rating" name="average_rating" value="{{ x['average_rating'] }}">
                             <input type="text" placeholder="Authors" name="authors" value="{{ x['authors'] }}">
                             <select name="language_code">
@@ -116,9 +115,8 @@
                                     <option>{{ x['language_code'] }}</option>
                                 {% endfor %}
                             </select>
-                            <input type="date" name="publication_date" value="{{ x['publication_date'] }}">
-                            <input type="text" name="publisher" value="{{ x['publisher'] }}">
-                            <input type="number" min="0" placeholder="Stock Availability" name="stock" value="{{ x['stock'] }}"> 
+                            <input type="date" placeholder="Publication Date" name="publication_date" value="{{ x['publication_date'] }}">
+                            <textarea placeholder="Publisher" name="publisher">{{ x['publisher'] }}</textarea>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="cancel" data-dismiss="modal">Close</button>
