@@ -107,7 +107,7 @@
                     </div>
                     <form method="POST" action="{{url_for('update_book')}}" name="update_book">
                         <div class="modal-body">
-                            <input type="text" placeholder="Book Title" name="title" value="{{ x['title'] }}">
+                            <textarea placeholder="Book Title" name="title">{{ x['title'] }}</textarea>
                             <input type="number" placeholder="Average Rating" name="average_rating" value="{{ x['average_rating'] }}">
                             <input type="text" placeholder="Authors" name="authors" value="{{ x['authors'] }}">
                             <select name="language_code">
@@ -116,9 +116,8 @@
                                     <option>{{ x['language_code'] }}</option>
                                 {% endfor %}
                             </select>
-                            <input type="date" name="publication_date" value="{{ x['publication_date'] }}">
-                            <input type="text" name="publisher" value="{{ x['publisher'] }}">
-                            <input type="number" min="0" placeholder="Stock Availability" name="stock" value="{{ x['stock'] }}"> 
+                            <input type="date" placeholder="Publication Date" name="publication_date" value="{{ x['publication_date'] }}">
+                            <textarea placeholder="Publisher" name="publisher">{{ x['publisher'] }}</textarea>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="cancel" data-dismiss="modal">Close</button>
