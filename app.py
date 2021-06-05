@@ -243,13 +243,18 @@ def reports():
 	if request.method == 'POST':
 		if 'button2' in request.form:
 			data = mysql_query("SELECT * from members order by total_amount_paid DESC")
-			print(data)
 			return render_template('index.html',data = data)
 		if 'button1' in request.form:
 			data2 = mysql_query("SELECT b.book_id,b.title,b.authors,b.publication_date,b.stock,b.publisher,b.ratings_count,count(t.book_id) as 'Book issued (times)' from transactions t,books b where b.book_id = t.book_id group by t.book_id order by 'Book issued (times)' DESC")
-			print(data2)
 			return render_template('index.html',data2 = data2)
 	return render_template('index.html')
+
+@app.route('/redirect_to_books_page',methods=['POST'])
+def redirect_to_books_page():
+	if request.method == 'POST':
+		input_value = request.form['input_value']
+		print(input_value)
+		return redirect(url_for('manage_books'))
 
 if __name__ == "__main__":
 	app.run(port='8000', debug=True)

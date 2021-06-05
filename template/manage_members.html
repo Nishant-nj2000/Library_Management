@@ -4,12 +4,12 @@
 {% block nav_manage_members %} class = "active" {% endblock %}
 
 {% block searchbox %}
-    <form class="form-inline my-2 my-lg-0 ml-auto" method="post" action="#">
+    <div class="form-inline my-2 my-lg-0 ml-auto">
         <div class="md-form my-0">
-            <input class="form-control mr-sm-2" style="width: 400px;" type="search" placeholder="Search Member" aria-label="Search">
-            <button class="btn btn-outline-success btn-lg my-2 my-sm-0" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+            <input class="form-control mr-sm-2" style="width: 400px;" type="search" placeholder="Search using member name or email or address" id="myInput2">
+            <button class="btn btn-outline-success btn-lg my-2 my-sm-0" type="button" onclick="search_member_function()"><i class="fa fa-search" aria-hidden="true"></i></button>
         </div>
-    </form>
+    </div>
 {% endblock %}
 
 {% block content %}
@@ -70,7 +70,7 @@
     </div>
     
     <br>
-    <table class="table-member table table-hover table-responsive-lg table-bordered">
+    <table id="members_table" class="table-member table table-hover table-responsive-lg table-bordered">
         <thead class="thead-dark">
             <th scope="col">Member Id</th>
             <th scope="col">Member Name</th>

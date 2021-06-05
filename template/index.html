@@ -4,9 +4,9 @@
 {% block nav_home %}class = "active" {% endblock %}
 
 {% block searchbox %}
-    <form class="form-inline my-2 my-lg-0 ml-auto" method="post" action="#">
+    <form class="form-inline my-2 my-lg-0 ml-auto" method="post" action="{{ url_for('redirect_to_books_page') }}">
         <div class="md-form my-0">
-            <input class="form-control mr-sm-2" style="width: 400px;" type="search" placeholder="Search books by book name or author" aria-label="Search">
+            <input class="form-control mr-sm-2" style="width: 400px;" name="input_value" type="search" placeholder="Search using book name or author name">
             <button class="btn btn-outline-success btn-lg my-2 my-sm-0" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
         </div>
     </form>
