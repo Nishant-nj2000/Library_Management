@@ -3,26 +3,109 @@
 
 {% block nav_home %}class = "active" {% endblock %}
 
+{% block searchbox %}
+    <form class="form-inline my-2 my-lg-0 ml-auto" method="post" action="#">
+        <div class="md-form my-0">
+            <input class="form-control mr-sm-2" style="width: 400px;" type="search" placeholder="Search books by book name or author" aria-label="Search">
+            <button class="btn btn-outline-success btn-lg my-2 my-sm-0" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+        </div>
+    </form>
+{% endblock %}
+    
 {% block content %}
+
     <br>
     <div class="user-dashboard">
         <div class="row">
             <div class="col-md-12 col-sm-7 col-xs-12 gutter">
-
-                <div class="sales report">
+                <div class="sales report" style="padding-bottom: 0px;">
                     <h2>Reports</h2>
-                    <div class="btn-group col-md-4">
-                        <button class="btn btn-dark btn-md dropdown-toggle btn-sales" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span><b>Select Report Type</b></span>
-                        </button>
-                        <div class="dropdown-menu">
-                            <a href="#">Most Popular Books</a>
-                            <hr>
-                            <a href="#">Highest Paying Customer</a>
-                        </div>
+                    <div class="btn-group col-md-10">
+                        <ul class="list-inline header-top col-md-4 ml-auto">
+                            <li class="hidden-xs" > 
+                                <button class="btn btn-dark btn-md dropdown-toggle btn-sales" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span><b>Select Report Type</b></span>
+                                </button>
+                                <form method="POST" action="{{ url_for('reports') }}">
+                                    <div class="dropdown-menu">
+                                        <button type="submit" name="button1" id="show_member_table" class="report-button"> Popular Books</button>
+                                        <hr>
+                                        <button type="submit" name="button2" id="show_books_table" class="report-button">Highest Paying Customer</button>
+                                    </div>
+                                </form>
+                            </li>
+                        </ul>
+                        
+                        <ul class="list-inline header-top">
+                            <li class="hidden-xs" ><button id="pdf" class="btn btn-primary btn-md btn-xs" onclick="printDiv()"><i class="fa fa-file-pdf-o" aria-hidden="true" style="color: white;"></i> <b>PDF</b></button></li>
+                            &nbsp
+                            <li class="hidden-xs" ><button id="excel" class="btn btn-primary btn-md btn-xs" onclick="fnExcelReport()"><i class="fa fa-file-excel-o" aria-hidden="true" style="color: white;"></i> <b>XLS</b></button></li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div id="printdivision">
+        <br>
+        {% if data %}
+        <h4 align="center"> Report - Highest Paying Customer </h4><br>
+        <table class="table-member table table-hover table-responsive-lg table-bordered" id="report_table">
+            <thead class="thead-dark">
+                <th scope="col">Member Id</th>
+                <th scope="col">Member Name</th>
+                <th scope="col">Mobile no.</th>
+                <th scope="col">Email Id</th>
+                <th scope="col">Address</th>
+                <th scope="col">Total Amount Paid</th>
+            </thead>
+            {% for x in data %}
+            <tbody>            
+                <tr>
+                    <td>{{ x['member_id'] }}</td>
+                    <td>{{ x['m_name'] }}</td>
+                    <td>{{ x['mobile'] }}</td>
+                    <td>{{ x['email_id'] }}</td>
+                    <td>{{ x['m_address'] }}</td>
+                    <td>{{ x['total_amount_paid'] }}</td>
+                </tr>
+            </tbody>
+            {% endfor %}
+        </table>
+        {% endif %}
+        
+        
+        {% if data2 %}
+        <h4 align="center"> Report - Most Popular Books </h4><br>
+        <table class="table-member table table-hover table-responsive-lg table-bordered" id="report_table">
+            <thead class="thead-dark">
+                <th scope="col">Book Id</th>
+                <th scope="col">Book Title</th>
+                <th scope="col">Authors</th>
+                <th scope="col">Publisher</th>
+                <th scope="col">Ratings</th>
+                <th scope="col">Publication Date</th>
+                <th scope="col">In Stock</th>
+                <th scope="col">Book issued (times)</th>
+            </thead>
+                
+            <tbody>
+                {% for x in data2 %}
+                    <tr>
+                        <td>{{ x['book_id'] }}</td>
+                        <td>{{ x['title'] }}</td>
+                        <td>{{ x['authors'] }}</td>
+                        <td>{{ x['publisher'] }}</td>
+                        <td>{{ x['ratings_count'] }}</td>
+                        <td>{{ x['publication_date'] }}</td>
+                        <td>{{ x['stock'] }}</td>
+                        <td>{{ x['Book issued (times)'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
 {% endblock %}
+

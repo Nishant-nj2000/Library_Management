@@ -3,6 +3,15 @@
 
 {% block nav_manage_members %} class = "active" {% endblock %}
 
+{% block searchbox %}
+    <form class="form-inline my-2 my-lg-0 ml-auto" method="post" action="#">
+        <div class="md-form my-0">
+            <input class="form-control mr-sm-2" style="width: 400px;" type="search" placeholder="Search Member" aria-label="Search">
+            <button class="btn btn-outline-success btn-lg my-2 my-sm-0" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+        </div>
+    </form>
+{% endblock %}
+
 {% block content %}
     <br>
     

@@ -3,6 +3,15 @@
 
 {% block nav_issue_books %} class = "active" {% endblock %}
 
+{% block searchbox %}
+    <form class="form-inline my-2 my-lg-0 ml-auto" method="post" action="#">
+        <div class="md-form my-0">
+            <input class="form-control mr-sm-2" style="width: 400px;" type="search" placeholder="Search for Transaction" aria-label="Search">
+            <button class="btn btn-outline-success btn-lg my-2 my-sm-0" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+        </div>
+    </form>
+{% endblock %}
+
 {% block content %}
     <br>
     
@@ -53,7 +62,7 @@
                             {% endfor %}
                             
                             <ul class="list-inline header-top">
-                                <li class="hidden-xs"><button type="submit" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true" style="color: white;"></i> <b>Issue Book</b></a></li> 
+                                <li class="hidden-xs"><button type="submit" name="button1" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true" style="color: white;"></i> <b>Issue Book</b></a></li> 
                             </ul>
                         </div>
                     </div>
@@ -70,7 +79,7 @@
             <th scope="col">Member Name</th>
             <th scope="col" >Issue Date</th>
             <th scope="col">Return Date</th>
-            <th scope="col">Rent Amount</th>
+            <th scope="col">Total Rent Amount</th>
             <th scope="col" style="text-align: center;">Outstanding Amount</th>
             <th scope="col" style="text-align: center;">Rent Paid</th>
             <th scope="col" style="text-align: center;">Book Return</th>
@@ -90,10 +99,10 @@
                         <td nowrap align="center">{{ x['return_date'] }}</td>
                     {% endif %}
 
-                    {% if x['rent'] == 0 %}
+                    {% if x['total_rent'] == 0 %}
                         <td align="center"><button type="button" name="rent" class="btn btn-warning btn-md">NIL</button></td>    
                     {% else %}
-                        <td align="center">{{ x['rent'] }}</td>    
+                        <td align="center">{{ x['total_rent'] }}</td>    
                     {% endif %}
 
                     {% if x['outstanding_amount']==0 %}
@@ -133,13 +142,14 @@
                         <div class="modal-body">
                             <input type="text" name="title" value="{{ x['title'] }}" readonly>
                             <input type="text" name="m_name" value="{{ x['m_name'] }}" readonly>
-                            <input type="text" pattern="[0-9]+" name="rent" placeholder="Rent Amount">
+                            <input type="text" pattern="[0-9]+" name="rent_amount_to_collect" placeholder="Enter the Amount you want to collect !">
                             <select name="rent_paid">
                                 <option value="Select">-- Amount Paid ? --</option>
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
                             </select> 
-                            <input type="hidden" name="book_id" value="{{ x['book_id'] }}">  
+                            <input type="hidden" name="book_id" value="{{ x['book_id'] }}"> 
+                            <input type="hidden" name="member_id" value="{{ x['member_id'] }}">  
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="cancel" data-dismiss="modal">Close</button>
@@ -167,7 +177,7 @@
                             <input type="text" name="m_name" value="{{ x['m_name'] }}" readonly>
                             <input type="hidden" name="outstanding_amount" value="{{ x['outstanding_amount'] }}">
                             <input type="hidden" name="m_name" value="{{ x['m_name'] }}">
-                            <input type="hidden" name="book_id" value="{{ x['book_id'] }}">  
+                            <input type="hidden" name="book_id" value="{{ x['book_id'] }}">                            
                             <input type="number" name="rent_amount" min="0" max="{{ x['outstanding_amount'] }}" placeholder="Rent amount to be paid">
                         </div>
                         <div class="modal-footer">

@@ -178,18 +178,17 @@ def issue_books_page_load():
 
 @app.route('/issue_book',methods=['POST'])
 def issue_book():
-	if request.method == 'POST':
+	if request.method == 'POST':	
 		book_id = request.form['book_id']
 		member_id = request.form['member_id']		
 		issue_date = date.today()
 		record = mysql_query("SELECT b.stock,t.book_id,t.member_id,t.return_date,t.outstanding_amount from transactions t, books b where b.book_id = t.book_id and t.book_id = '{}' and t.member_id = '{}'".format(book_id,member_id))
 		total_outstandings = mysql_query("SELECT sum(outstanding_amount) as total_outstandings from transactions where member_id = '{}' group by member_id".format(member_id))
-		print(total_outstandings)
 		if len(record) != 0 and record[0]['return_date'] == None :
 			flash("Book already issued !" ,'info')
 		elif len(record) != 0 and record[0]['stock'] == 0:
 			flash("Book is Out of Stock" ,'danger')
-		elif len(total_outstandings) != 0 and total_outstandings[0]['total_outstandings']:
+		elif len(total_outstandings) != 0 and total_outstandings[0]['total_outstandings'] > 500:
 			flash("Total Outstandings Exceeds ₹500" ,'danger')
 		else:
 			mysql_query("UPDATE books set stock = stock - {} where book_id = '{}'".format(1,book_id))
@@ -199,14 +198,19 @@ def issue_book():
 @app.route('/book_return',methods=['POST'])
 def book_return():
 	if request.method == 'POST':
-		rent = request.form['rent']
+		member_id = request.form['member_id']
+		rent_amount_to_collect = request.form['rent_amount_to_collect']
 		rent_paid = request.form['rent_paid']
 		return_date = date.today()
 		t_id = request.form['t_id']
 		if rent_paid == "yes":
-			mysql_query("UPDATE transactions t inner join members m on t.member_id = m.member_id set t.outstanding_amount = '{}', t.return_date = '{}', t.rent = '{}', t.rent_paid = '{}' where t.t_id = '{}'".format(0,return_date,rent,rent_paid,t_id))
+			mysql_query("UPDATE transactions t inner join members m on t.member_id = m.member_id set t.outstanding_amount = '{}', t.return_date = '{}', t.total_rent = '{}', t.rent_paid = '{}' where t.t_id = '{}'".format(0,return_date,rent_amount_to_collect,rent_paid,t_id))
+			result = mysql_query("SELECT member_id as m_id,sum(total_rent) as total_rent_amount_paid_yet from transactions where rent_paid = '{}' and member_id = '{}'".format('yes',member_id))
+			amount_paid_till_now = result[0]['total_rent_amount_paid_yet']
+			m_id = result[0]['m_id']
+			mysql_query("UPDATE members set total_amount_paid = '{}' where member_id = '{}'".format(amount_paid_till_now,m_id))
 		else:
-			mysql_query("UPDATE transactions t inner join members m on t.member_id = m.member_id set t.outstanding_amount = '{}', t.return_date = '{}', t.rent = '{}', t.rent_paid = '{}' where t.t_id = '{}'".format(rent,return_date,rent,rent_paid,t_id))
+			mysql_query("UPDATE transactions t inner join members m on t.member_id = m.member_id set t.outstanding_amount = '{}', t.return_date = '{}', t.total_rent = '{}', t.rent_paid = '{}' where t.t_id = '{}'".format(rent_amount_to_collect,return_date,rent_amount_to_collect,rent_paid,t_id))
 		return redirect(url_for('issue_books_page_load'))
 
 @app.route('/outstanding_settlement',methods=['POST'])
@@ -222,11 +226,30 @@ def outstanding_settlement():
 		if new_amount == 0:
 			mysql_query("UPDATE transactions t inner join members m on t.member_id = m.member_id set t.outstanding_amount = '{}', t.rent_paid = '{}' where m.member_id = '{}' and  t.t_id = '{}'".format(new_amount,'yes',member_id,t_id))
 			mysql_query("UPDATE books set stock = stock + {} where book_id = '{}'".format(1,book_id))
+			result = mysql_query("SELECT member_id as m_id,sum(total_rent) as total_rent_amount_paid_yet from transactions where rent_paid = '{}' and member_id = '{}'".format('yes',member_id))
+			amount_paid_till_now = result[0]['total_rent_amount_paid_yet']
+			m_id = result[0]['m_id']
+			mysql_query("UPDATE members set total_amount_paid = '{}' where member_id = '{}'".format(amount_paid_till_now,m_id))
 			flash("Outstanding Amount Cleared for " +m_name ,'success')
 		else:
 			mysql_query("UPDATE transactions set outstanding_amount = '{}' where member_id = '{}' and t_id = '{}'".format(new_amount,member_id,t_id))
+			mysql_query("UPDATE members set total_amount_paid =  total_amount_paid + '{}' where member_id = '{}'".format(rent_amount,member_id))
 			flash("Adjustments done for " +m_name ,'info')
 	return redirect(url_for('issue_books_page_load'))
+
+
+@app.route('/reports',methods=['POST'])
+def reports():
+	if request.method == 'POST':
+		if 'button2' in request.form:
+			data = mysql_query("SELECT * from members order by total_amount_paid DESC")
+			print(data)
+			return render_template('index.html',data = data)
+		if 'button1' in request.form:
+			data2 = mysql_query("SELECT b.book_id,b.title,b.authors,b.publication_date,b.stock,b.publisher,b.ratings_count,count(t.book_id) as 'Book issued (times)' from transactions t,books b where b.book_id = t.book_id group by t.book_id order by 'Book issued (times)' DESC")
+			print(data2)
+			return render_template('index.html',data2 = data2)
+	return render_template('index.html')
 
 if __name__ == "__main__":
 	app.run(port='8000', debug=True)
