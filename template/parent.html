@@ -23,12 +23,10 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
             
-            <form class="form-inline my-2 my-lg-0 ml-auto" method="post" action="#">
-                <div class="md-form my-0">
-                    <input class="form-control mr-sm-2" style="width: 400px;" type="search" title="Search by either book name aur author name" placeholder="Search books by book name or author" aria-label="Search">
-                    <button class="btn btn-outline-success btn-lg my-2 my-sm-0" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
-                  </div>
-            </form>
+                {% block searchbox %}
+                
+                {% endblock %}
+            
             </div>
         </nav>
 
@@ -79,5 +77,182 @@
                     </div>
                 </div>
             </div>
-        </body>
+
+            <script> 
+                function printDiv() 
+                { 
+                    var divContents = document.getElementById("printdivision").innerHTML; 
+                    var a = window.open('', '', 'height=1080, width=1080'); 
+                    a.document.write('<html>'); 
+                    a.document.write('<body >');
+                    a.document.write(divContents); 
+                    a.document.write('</body></html>'); 
+                    a.document.close(); 
+                    a.print(); 
+                } 
+            
+                function fnExcelReport()
+                {
+                    var tab_text="<table border='2px'><tr bgcolor='#007bff'>";
+                    var textRange; var j=0;
+                    tab = document.getElementById('report_table');
+            
+                    for(j = 0 ; j < tab.rows.length ; j++) 
+                    {     
+                        tab_text=tab_text+tab.rows[j].innerHTML+"</tr>";
+                    }
+            
+                    tab_text=tab_text+"</table>";
+                    tab_text= tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
+                    tab_text= tab_text.replace(/<img[^>]*>/gi,""); // remove if u want images in your table
+            
+                    var ua = window.navigator.userAgent;
+                    var msie = ua.indexOf("MSIE "); 
+            
+                    sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));  
+            
+                    return (sa);
+                }
+
+                function search_books_function() 
+                {
+                    var input, filter, table, tr, td, i, txtValue, txtValue2,txtValue3, txtValue4, txtValue5;
+                    input = document.getElementById("myInput");
+                    filter = input.value.toUpperCase();
+                    table = document.getElementById("books_table");
+                    tr = table.getElementsByTagName("tr");
+
+                    // Loop through all table rows, and hide those who don't match the search query
+                    for (i = 0; i < tr.length; i++) 
+                    {
+                        td = tr[i].getElementsByTagName("td")[1];
+                        td2 = tr[i].getElementsByTagName("td")[3];
+                        td3 = tr[i].getElementsByTagName("td")[4];
+                        td4 = tr[i].getElementsByTagName("td")[5];
+                        td5 = tr[i].getElementsByTagName("td")[6];
+                        
+                        if (td || td2 || td3 || td4 || td5) 
+                        {
+                            txtValue = td.textContent || td.innerText;
+                            txtValue2 = td2.textContent || td2.innerText;
+                            txtValue3 = td3.textContent || td3.innerText;
+                            txtValue4 = td4.textContent || td4.innerText;
+                            txtValue5 = td5.textContent || td5.innerText;
+                            
+
+                            if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) >-1 || txtValue3.toUpperCase().indexOf(filter) >-1 || txtValue4.toUpperCase().indexOf(filter) >-1 || txtValue5.toUpperCase().indexOf(filter) >-1) 
+                            {
+                                tr[i].style.display = "";
+                            } 
+                            else 
+                            {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+
+                function search_member_function() 
+                {
+                    var input, filter, table, tr, td, i, txtValue, txtValue2, txtValue3, txtValue4, txtValue5;
+                    input = document.getElementById("myInput2");
+                    filter = input.value.toUpperCase();
+                    table = document.getElementById("members_table");
+                    tr = table.getElementsByTagName("tr");
+
+                    // Loop through all table rows, and hide those who don't match the search query
+                    for (i = 0; i < tr.length; i++) 
+                    {
+                        td = tr[i].getElementsByTagName("td")[1];
+                        td2 = tr[i].getElementsByTagName("td")[2];
+                        td3 = tr[i].getElementsByTagName("td")[3];
+                        td4 = tr[i].getElementsByTagName("td")[4];
+                        td5 = tr[i].getElementsByTagName("td")[5]
+                        
+                        if (td || td2 || td3 || td4 || td5) 
+                        {
+                            txtValue = td.textContent || td.innerText;
+                            txtValue2 = td2.textContent || td2.innerText;
+                            txtValue3 = td3.textContent || td3.innerText;
+                            txtValue4  = td4.textContent || td4.innerText;
+                            txtValue5 = td5.textContent || td5.innerText;
+
+                            if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1 || txtValue3.toUpperCase().indexOf(filter) > -1 || txtValue4.toUpperCase().indexOf(filter) > -1 || txtValue5.toUpperCase().indexOf(filter) > -1) 
+                            {
+                                tr[i].style.display = "";
+                            } 
+                            else 
+                            {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+
+                function search_issued_books_function() 
+                {
+                    var input, filter, table, tr, td, i, txtValue, txtValue2;
+                    input = document.getElementById("myInput3");
+                    filter = input.value.toUpperCase();
+                    table = document.getElementById("issued_books");
+                    tr = table.getElementsByTagName("tr");
+
+                    // Loop through all table rows, and hide those who don't match the search query
+                    for (i = 0; i < tr.length; i++) 
+                    {
+                        td = tr[i].getElementsByTagName("td")[1];
+                        td2 = tr[i].getElementsByTagName("td")[2];
+                        if (td || td2) 
+                        {
+                            txtValue = td.textContent || td.innerText;
+                            txtValue2 = td2.textContent || td2.innerText;
+
+                            if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1) 
+                            {
+                                tr[i].style.display = "";
+                            } 
+                            else 
+                            {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+                
+                
+                function search_reports() 
+                {
+                    var input, filter, table, tr, td, i, txtValue, txtValue2, txtValue3;
+                    input = document.getElementById("myInput4");
+                    filter = input.value.toUpperCase();
+                    table = document.getElementById("report_table");
+                    tr = table.getElementsByTagName("tr");
+
+                    // Loop through all table rows, and hide those who don't match the search query
+                    for (i = 0; i < tr.length; i++) 
+                    {
+                        td = tr[i].getElementsByTagName("td")[1];
+                        td2 = tr[i].getElementsByTagName("td")[2];
+                        td3 = tr[i].getElementsByTagName("td")[3];
+                        
+                        if (td || td2 || td3) 
+                        {
+                            txtValue = td.textContent || td.innerText;
+                            txtValue2 = td2.textContent || td2.innerText;
+                            txtValue3 = td3.textContent || td3.innerText;
+
+                            if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1 || txtValue3.toUpperCase().indexOf(filter) > -1) 
+                            {
+                                tr[i].style.display = "";
+                            } 
+                            else 
+                            {
+                                tr[i].style.display = "none";
+                            }
+                        }
+                    }
+                }
+                
+            </script>
+    </body>
 </html>

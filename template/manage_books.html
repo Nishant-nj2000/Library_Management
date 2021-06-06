@@ -3,6 +3,14 @@
 
 {% block nav_manage_books %} class = "active" {% endblock %}
 
+{% block searchbox %}
+    <div class="form-inline my-2 my-lg-0 ml-auto">
+        <div class="md-form my-0">
+            <input class="form-control mr-sm-2" style="width: 400px;" type="search" onkeyup="search_books_function()"placeholder="Search here" id="myInput"> <i class="fa fa-search" aria-hidden="true" style="color: green;"></i>
+        </div>
+    </div>
+{% endblock %}
+
 {% block content %}
     <br>
 
@@ -45,7 +53,7 @@
                 </div>
                 <form method="POST" action="{{url_for('import_book')}}">
                     <div class="modal-body">
-                        <input type="number" min="1" placeholder="Enter No. of Records to import" name="no_of_records">
+                        <input type="number" min="1" placeholder="Enter No. of Records to import" name="no_of_records" required>
                         <p>Or Import Using ↓</p>
                         <input type="text" placeholder="Book Title" name="title">
                         <input type="text" placeholder="Book Authors" name="authors">
@@ -63,7 +71,7 @@
     </div>
 
     <br>
-    <table id="dtbooks" class="table-member table table-hover table-responsive-lg table-bordered">
+    <table id="books_table" class="table-member table table-hover table-responsive-lg table-bordered">
         <thead class="thead-dark">
             <th scope="col">Book Id</th>
             <th scope="col">Book Title</th>
@@ -106,17 +114,17 @@
                     </div>
                     <form method="POST" action="{{url_for('update_book')}}" name="update_book">
                         <div class="modal-body">
-                            <textarea placeholder="Book Title" name="title">{{ x['title'] }}</textarea>
-                            <input type="number" placeholder="Average Rating" name="average_rating" value="{{ x['average_rating'] }}">
-                            <input type="text" placeholder="Authors" name="authors" value="{{ x['authors'] }}">
+                            <textarea placeholder="Book Title" name="title" required>{{ x['title'] }}</textarea>
+                            <input type="number" placeholder="Average Rating" name="average_rating" value="{{ x['average_rating'] }}" required>
+                            <input type="text" placeholder="Authors" name="authors" value="{{ x['authors'] }}" required>
                             <select name="language_code">
                                 <option value="{{ x['language_code'] }}">{{ x['language_code'] }}</option>
                                 {% for x in data1 %}
                                     <option>{{ x['language_code'] }}</option>
                                 {% endfor %}
                             </select>
-                            <input type="date" placeholder="Publication Date" name="publication_date" value="{{ x['publication_date'] }}">
-                            <textarea placeholder="Publisher" name="publisher">{{ x['publisher'] }}</textarea>
+                            <input type="date" placeholder="Publication Date" name="publication_date" value="{{ x['publication_date'] }}" required>
+                            <textarea placeholder="Publisher" name="publisher" required>{{ x['publisher'] }}</textarea>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="cancel" data-dismiss="modal">Close</button>
