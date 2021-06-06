@@ -4,12 +4,11 @@
 {% block nav_home %}class = "active" {% endblock %}
 
 {% block searchbox %}
-    <form class="form-inline my-2 my-lg-0 ml-auto" method="post" action="{{ url_for('redirect_to_books_page') }}">
+    <div class="form-inline my-2 my-lg-0 ml-auto">  
         <div class="md-form my-0">
-            <input class="form-control mr-sm-2" style="width: 400px;" name="input_value" type="search" placeholder="Search using book name or author name">
-            <button class="btn btn-outline-success btn-lg my-2 my-sm-0" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+            <input class="form-control mr-sm-2" style="width: 400px;" name="input_value" type="search" placeholder="Search here" id="myInput4" onkeyup="search_reports()"> <i class="fa fa-search" aria-hidden="true" style="color: green;"></i>
         </div>
-    </form>
+    </div>
 {% endblock %}
     
 {% block content %}
@@ -100,7 +99,7 @@
                         <td>{{ x['ratings_count'] }}</td>
                         <td>{{ x['publication_date'] }}</td>
                         <td>{{ x['stock'] }}</td>
-                        <td>{{ x['Book issued (times)'] }}</td>
+                        <td>{{ x['count(t.book_id)'] }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

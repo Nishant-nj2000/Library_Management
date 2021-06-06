@@ -6,8 +6,7 @@
 {% block searchbox %}
     <div class="form-inline my-2 my-lg-0 ml-auto">
         <div class="md-form my-0">
-            <input class="form-control mr-sm-2" style="width: 400px;" type="search" placeholder="Search using member name or email or address" id="myInput2">
-            <button class="btn btn-outline-success btn-lg my-2 my-sm-0" type="button" onclick="search_member_function()"><i class="fa fa-search" aria-hidden="true"></i></button>
+            <input class="form-control mr-sm-2" style="width: 400px;" type="search" placeholder="Search here" id="myInput2" onkeyup="search_member_function()"> <i class="fa fa-search" aria-hidden="true" style="color: green;"></i>
         </div>
     </div>
 {% endblock %}
@@ -54,10 +53,10 @@
                 </div>
                 <form method="POST" action="{{url_for('add_member')}}" name="add_member">
                     <div class="modal-body">
-                        <input type="text" pattern="[a-zA-Z\s]+" placeholder="Member Full-Name" name="m_name">
-                        <input type="text" pattern="[7-9]{1}[0-9]{9}" placeholder="Contact no." name="mobile">
-                        <input type="email" placeholder="Email Id" name="email_id">
-                        <textarea placeholder="Address" name="address"></textarea> 
+                        <input type="text" pattern="[a-zA-Z\s]+" placeholder="Member Full-Name" name="m_name" required>
+                        <input type="text" pattern="[7-9]{1}[0-9]{9}" placeholder="Contact no." name="mobile" required>
+                        <input type="email" placeholder="Email Id" name="email_id" required>
+                        <textarea placeholder="Address" name="address" required></textarea> 
                     </div>
 
                     <div class="modal-footer">
@@ -109,10 +108,10 @@
                     </div>
                     <form method="POST" action="{{url_for('update_member')}}" name="update_member">
                         <div class="modal-body">
-                            <input type="text" pattern="[a-zA-Z\s]+" placeholder="Member Full-Name" name="m_name" value="{{ x['m_name'] }}">
-                            <input type="text" pattern="[7-9]{1}[0-9]{9}" placeholder="Contact no." name="mobile" value="{{ x['mobile'] }}">
-                            <input type="email" placeholder="Email Id" name="email_id" value="{{ x['email_id'] }}">
-                            <textarea placeholder="Address" name="address">{{ x['m_address'] }}</textarea> 
+                            <input type="text" pattern="[a-zA-Z\s]+" placeholder="Member Full-Name" name="m_name" value="{{ x['m_name'] }}" required>
+                            <input type="text" pattern="[7-9]{1}[0-9]{9}" placeholder="Contact no." name="mobile" value="{{ x['mobile'] }}" required>
+                            <input type="email" placeholder="Email Id" name="email_id" value="{{ x['email_id'] }}" required>
+                            <textarea placeholder="Address" name="address" required>{{ x['m_address'] }}</textarea> 
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="cancel" data-dismiss="modal">Close</button>
