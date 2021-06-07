@@ -75,19 +75,12 @@ def import_book():
 				for b in range(0,no_of_records):
 					connection = mysql.connect()
 					cursor = connection.cursor()
-					print(no_of_records)
 					book_id = a['message'][b]['bookID']
-					print(book_id)
 					data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
-					print(len(data_check))
 					if len(data_check) == 0:
 						sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-						print(a['message'][b]['title'])
-						print(a['message'][b]['authors'])
-						print(a['message'][b]['isbn'])
-						print(a['message'][b]['publication_date'])
-						# timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
-						dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],a['message'][b]['publication_date'],a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'])
+						timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
+						dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'])
 						cursor.execute(sql,dt)
 						connection.commit()
 					else:
@@ -95,7 +88,7 @@ def import_book():
 				flash("Books Imported Successfully !",'success')
 			return redirect(url_for('manage_books'))
 	except:
-			flash("Sufficient Records not found !",'danger') 
+			flash("Sufficient Records not found !",'warning') 
 			return redirect(url_for('manage_books'))
 
 
@@ -187,33 +180,40 @@ def issue_books_page_load():
 
 @app.route('/issue_book',methods=['POST'])
 def issue_book():
-	if request.method == 'POST':	
-		book_id = request.form['book_id']
-		member_id = request.form['member_id']
-		issue_date = date.today()
-		if book_id and member_id != '0':
-			record = mysql_query("SELECT book_id,member_id,return_date from transactions where book_id = '{}' and member_id = '{}'".format(book_id,member_id))
-			issues_of_books =  mysql_query("SELECT count(member_id) as total_issues_without_return from transactions where member_id = '{}' and return_date is NULL group by member_id".format(member_id))
-			stock = mysql_query("SELECT title,stock from books where book_id = '{}'".format(book_id))
-			m_name = mysql_query("SELECT m_name from members where member_id = '{}'".format(member_id))
-			total_outstandings = mysql_query("SELECT sum(outstanding_amount) as total_outstandings from transactions where member_id = '{}' group by member_id".format(member_id))
-			m_name = m_name[0]['m_name']
-			title = stock[0]['title']
-			
-			if len(record) != 0 and record[0]['return_date'] == None :
-				flash("Book already issued to "+m_name+" !" ,'warning')
-			elif len(issues_of_books) != 0 and issues_of_books[0]['total_issues_without_return'] == 2:
-				flash(m_name+" has already been issued 2 books ! Return some to proceed !" ,'danger')
-			elif len(stock) != 0 and stock[0]['stock'] == 0:
-				flash(title+" is Out of Stock" ,'warning')
-			elif len(total_outstandings) != 0 and total_outstandings[0]['total_outstandings'] > 500:
-				flash("Total Outstandings Exceeds ₹500 for "+m_name ,'danger')
-			else:
-				mysql_query("UPDATE books set stock = stock - {} where book_id = '{}'".format(1,book_id))
-				mysql_query("INSERT into transactions(book_id,member_id,issue_date) values ('{}','{}','{}')".format(book_id,member_id,issue_date))
-		if book_id or member_id == '0':
-			return redirect(url_for('issue_books_page_load'))	
-	return redirect(url_for('issue_books_page_load'))
+	try:
+		if request.method == 'POST':	
+			book_id = request.form['book_id']
+			member_id = request.form['member_id']
+			issue_date = date.today()
+			print(book_id)
+			print(member_id)
+			if book_id and member_id != 0:
+				record = mysql_query("SELECT book_id,member_id,return_date from transactions where book_id = '{}' and member_id = '{}'".format(book_id,member_id))
+				issues_of_books =  mysql_query("SELECT count(member_id) as total_issues_without_return from transactions where member_id = '{}' and return_date is NULL group by member_id".format(member_id))
+				stock = mysql_query("SELECT title,stock from books where book_id = '{}'".format(book_id))
+				m_name = mysql_query("SELECT m_name from members where member_id = '{}'".format(member_id))
+				total_outstandings = mysql_query("SELECT sum(outstanding_amount) as total_outstandings from transactions where member_id = '{}' group by member_id".format(member_id))
+				m_name = m_name[0]['m_name']
+				title = stock[0]['title']
+				
+				if len(record) != 0 and record[0]['return_date'] == None :
+					flash("Book already issued to "+m_name+" !" ,'warning')
+				elif len(issues_of_books) != 0 and issues_of_books[0]['total_issues_without_return'] == 2:
+					flash(m_name+" has already been issued 2 books ! Return some to proceed !" ,'danger')
+				elif len(stock) != 0 and stock[0]['stock'] == 0:
+					flash(title+" is Out of Stock" ,'warning')
+				elif len(total_outstandings) != 0 and total_outstandings[0]['total_outstandings'] > 500:
+					flash("Total Outstandings Exceeds ₹500 for "+m_name ,'danger')
+				else:
+					mysql_query("UPDATE books set stock = stock - {} where book_id = '{}'".format(1,book_id))
+					mysql_query("INSERT into transactions(book_id,member_id,issue_date) values ('{}','{}','{}')".format(book_id,member_id,issue_date))
+		return redirect(url_for('issue_books_page_load'))
+	except:
+		flash("Please Select Valid input" ,'danger')
+		return redirect(url_for('issue_books_page_load'))
+
+		
+	
 
 @app.route('/book_return',methods=['POST'])
 def book_return():
