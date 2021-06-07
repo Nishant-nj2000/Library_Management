@@ -54,39 +54,49 @@ def main():
 
 @app.route('/import_book', methods=['POST'])
 def import_book():
-	if request.method == 'POST':
-		no_of_records = int(request.form['no_of_records'])
-		title = request.form['title']
-		authors = request.form['authors']
-		isbn = request.form['isbn']
-		publisher = request.form['publisher']
-		list1 = []
-		page = no_of_records/20
-		rounded_value = math.ceil(page)
-		api_data = "https://frappe.io/api/method/frappe-library"
-		parameters = {'page':no_of_records,'title':title,'authors':authors,'isbn':isbn,'publisher':publisher}
-		connection = mysql.connect()
-		cursor = connection.cursor()
-		#using loop for inserting n number of records 
-		for a in range(0,rounded_value):
-			list2 = []
-			request_data = requests.get(url=api_data,params=parameters)
-			list2 = request_data.json()
-			list1.append(list2)
-		for a in list1:
-			for b in range(0,no_of_records):
-				book_id = a['message'][0]['bookID']
-				data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
-				if len(data_check) == 0:
-					sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-					timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
-					dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'])
-					cursor.execute(sql,dt)
-				else:
-					mysql_query("UPDATE books set stock = stock + '{}' where book_id = '{}'".format(1,book_id))
-			flash("Books Imported Successfully !",'success')
-			connection.commit()
-		return redirect(url_for('manage_books'))	 
+	try:
+		if request.method == 'POST':
+			no_of_records = request.form['no_of_records']
+			no_of_records = int(no_of_records)
+			title = request.form['title']
+			authors = request.form['authors']
+			isbn = request.form['isbn']
+			publisher = request.form['publisher']
+			list1 = []
+			page = no_of_records/20
+			rounded_value = math.ceil(page)
+			#using loop for inserting n number of records 
+			for b in range(1,rounded_value+1):
+				list2 = []
+				request_data = requests.get("https://frappe.io/api/method/frappe-library?page={}&title={}&authors={}&isbn={}&publisher={}".format(b,title,authors,isbn,publisher))
+				list2 = request_data.json()
+				list1.append(list2)	
+			for a in list1:
+				for b in range(0,no_of_records):
+					connection = mysql.connect()
+					cursor = connection.cursor()
+					print(no_of_records)
+					book_id = a['message'][b]['bookID']
+					print(book_id)
+					data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
+					print(len(data_check))
+					if len(data_check) == 0:
+						sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+						print(a['message'][b]['title'])
+						print(a['message'][b]['authors'])
+						print(a['message'][b]['isbn'])
+						print(a['message'][b]['publication_date'])
+						# timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
+						dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],a['message'][b]['publication_date'],a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'])
+						cursor.execute(sql,dt)
+						connection.commit()
+					else:
+						mysql_query("UPDATE books set stock = stock + {}, total_stock = total_stock + {} where book_id = '{}'".format(1,1,book_id,))
+				flash("Books Imported Successfully !",'success')
+			return redirect(url_for('manage_books'))
+	except:
+			flash("Sufficient Records not found !",'danger') 
+			return redirect(url_for('manage_books'))
 
 
 @app.route('/manage_books')
@@ -122,7 +132,7 @@ def delete_book():
 
 @app.route('/manage_members')
 def manage_members():
-	data = mysql_query("SELECT * from members")
+	data = mysql_query("SELECT * from members order by m_name")
 	return render_template('manage_members.html',data=data)
 
 @app.route('/add_member', methods=['POST'])
@@ -193,11 +203,11 @@ def issue_book():
 			if len(record) != 0 and record[0]['return_date'] == None :
 				flash("Book already issued to "+m_name+" !" ,'warning')
 			elif len(issues_of_books) != 0 and issues_of_books[0]['total_issues_without_return'] == 2:
-				flash(m_name+" has already been issued 3 books ! Return some to proceed !" ,'danger')
+				flash(m_name+" has already been issued 2 books ! Return some to proceed !" ,'danger')
 			elif len(stock) != 0 and stock[0]['stock'] == 0:
 				flash(title+" is Out of Stock" ,'warning')
 			elif len(total_outstandings) != 0 and total_outstandings[0]['total_outstandings'] > 500:
-				flash("Total Outstandings Exceeds ₹500"+m_name ,'danger')
+				flash("Total Outstandings Exceeds ₹500 for "+m_name ,'danger')
 			else:
 				mysql_query("UPDATE books set stock = stock - {} where book_id = '{}'".format(1,book_id))
 				mysql_query("INSERT into transactions(book_id,member_id,issue_date) values ('{}','{}','{}')".format(book_id,member_id,issue_date))
@@ -257,8 +267,7 @@ def reports():
 			data = mysql_query("SELECT * from members order by total_amount_paid DESC")
 			return render_template('index.html',data = data)
 		if 'button1' in request.form:
-			data2 = mysql_query("SELECT b.book_id,b.title,b.authors,b.publication_date,b.stock,b.publisher,b.ratings_count,count(t.book_id) from transactions t,books b where b.book_id = t.book_id group by t.book_id order by count(t.book_id) DESC")
-			
+			data2 = mysql_query("SELECT b.book_id,b.title,b.authors,b.publication_date,b.stock,b.total_stock,b.publisher,b.ratings_count,count(t.book_id) from transactions t,books b where b.book_id = t.book_id group by t.book_id order by count(t.book_id) DESC")
 			return render_template('index.html',data2 = data2)
 	return render_template('index.html')
 

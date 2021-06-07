@@ -17,7 +17,7 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="width:30%; margin-left: 20px;">
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="width:50%; margin-left: 20px;">
                     <span>{{ message }}</span>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">×</span>
@@ -53,8 +53,8 @@
                 </div>
                 <form method="POST" action="{{url_for('import_book')}}">
                     <div class="modal-body">
-                        <input type="number" min="1" placeholder="Enter No. of Records to import" name="no_of_records" required>
-                        <p>Or Import Using ↓</p>
+                        <input type="number" min="1" value="1" placeholder="Enter No. of Books to import" name="no_of_records" required>
+                        <p>Import Using ↓</p>
                         <input type="text" placeholder="Book Title" name="title">
                         <input type="text" placeholder="Book Authors" name="authors">
                         <input type="text" placeholder="ISBN" name="isbn">
@@ -71,7 +71,7 @@
     </div>
 
     <br>
-    <table id="books_table" class="table-member table table-hover table-responsive-lg table-bordered">
+    <table id="books_table" class="table-member table table-hover table-responsive-lg">
         <thead class="thead-dark">
             <th scope="col">Book Id</th>
             <th scope="col">Book Title</th>
@@ -95,13 +95,49 @@
                     <td>{{ x['language_code'] }}</td>
                     <td>{{ x['publication_date'] }}</td>
                     <td>{{ x['publisher'] }}</td>
-                    <td>{{ x['stock'] }}</td>
+                    {% if x['stock'] == 0 %}
+                        <td style="padding-left:7px;"><button type="button" name="update" class="btn btn-danger" data-toggle="modal" data-target="#import_book{{ x['book_id'] }}" style="border-radius: 20px;">N/A</button></td>
+                    {% else %}
+                        <td>{{ x['stock'] }}</td>
+                    {% endif %}
                     <td style="text-align: center;"><button type="submit" name="update" class="btn btn-primary" data-toggle="modal" data-target="#update_book{{ x['book_id'] }}" style="border-radius: 20px;"><i class="fa fa-pencil-square-o circle-icon" aria-hidden="true"></i></button></td>
                     <td style="text-align: center;"><button type="submit" name="delete" class="btn btn-danger" data-toggle="modal" data-target="#delete_book{{ x['book_id'] }}" style="border-radius: 20px;"><i class="fa fa-trash circle-icon" aria-hidden="true"></i></button></td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    
+    <!-- Modal -->
+    {% for x in data %}
+    <div id="import_book{{ x['book_id'] }}" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header login-header">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <h4 class="modal-title">Import Books</h4>
+                </div>
+                <form method="POST" action="{{url_for('import_book')}}">
+                    <div class="modal-body">
+                        <input type="number" min="1" value="1" placeholder="Enter No. of Books to import" name="no_of_records" required>
+                        <p>Import Using ↓</p>
+                        <input type="text" placeholder="Book Title" value="{{ x['title'] }}" name="title" readonly> 
+                        <input type="text" placeholder="Book Authors" value="{{ x['authors'] }}" name="authors" readonly>
+                        <input type="text" placeholder="ISBN" value="{{ x['isbn'] }}" name="isbn" readonly>
+                        <input type="text" placeholder="Publisher" value="{{ x['publisher'] }}" name="publisher" readonly>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="cancel" data-dismiss="modal">Close</button>
+                        <button type="submit" name="import" class="add-project">Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
 
     {% for x in data %}
         <div id="update_book{{ x['book_id'] }}" class="modal fade" role="dialog">
@@ -124,7 +160,7 @@
                                 {% endfor %}
                             </select>
                             <input type="date" placeholder="Publication Date" name="publication_date" value="{{ x['publication_date'] }}" required>
-                            <textarea placeholder="Publisher" name="publisher" required>{{ x['publisher'] }}</textarea>
+                            <input type="text" placeholder="Publisher" name="publisher" value="{{ x['publisher'] }}" required>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="cancel" data-dismiss="modal">Close</button>

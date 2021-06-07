@@ -17,7 +17,7 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="width:30%; margin-left: 20px;">
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="width:50%; margin-left: 20px;">
                     <span>{{ message }}</span>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">×</span>
@@ -71,7 +71,7 @@
     </div>
 
     <br>
-    <table id="issued_books" class="table-member table table-hover table-responsive-lg table-bordered">
+    <table id="issued_books" class="table-member table table-hover table-responsive-lg">
         <thead class="thead-dark">
             <th scope="col">Transaction Id</th>
             <th scope="col">Book Title</th>

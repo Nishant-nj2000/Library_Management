@@ -50,7 +50,7 @@
         <br>
         {% if data %}
         <h4 align="center"> Report - Highest Paying Customer </h4><br>
-        <table class="table-member table table-hover table-responsive-lg table-bordered" id="report_table">
+        <table class="table-member table table-hover table-responsive-lg" id="report_table">
             <thead class="thead-dark">
                 <th scope="col">Member Id</th>
                 <th scope="col">Member Name</th>
@@ -77,7 +77,7 @@
         
         {% if data2 %}
         <h4 align="center"> Report - Most Popular Books </h4><br>
-        <table class="table-member table table-hover table-responsive-lg table-bordered" id="report_table">
+        <table class="table-member table table-hover table-responsive-lg" id="report_table">
             <thead class="thead-dark">
                 <th scope="col">Book Id</th>
                 <th scope="col">Book Title</th>
@@ -85,7 +85,8 @@
                 <th scope="col">Publisher</th>
                 <th scope="col">Ratings</th>
                 <th scope="col">Publication Date</th>
-                <th scope="col">In Stock</th>
+                <th scope="col">Available No. of Books</th>
+                <th scope="col">Total Stock</th>
                 <th scope="col">Book issued (times)</th>
             </thead>
                 
@@ -98,7 +99,12 @@
                         <td>{{ x['publisher'] }}</td>
                         <td>{{ x['ratings_count'] }}</td>
                         <td>{{ x['publication_date'] }}</td>
-                        <td>{{ x['stock'] }}</td>
+                        {% if x['stock'] == 0 %}
+                            <td style="color:red">{{ x['stock'] }}</button></td>
+                        {% else %}
+                            <td>{{ x['stock'] }}</td>
+                        {% endif %}
+                        <td>{{ x['total_stock'] }}</td>
                         <td>{{ x['count(t.book_id)'] }}</td>
                     </tr>
                 {% endfor %}
