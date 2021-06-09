@@ -108,7 +108,12 @@ def update_book():
 		language_code = request.form['language_code']
 		publication_date = request.form['publication_date']
 		publisher = request.form['publisher']
-		mysql_query("UPDATE books set title = '{}', average_rating = '{}', authors = '{}', language_code = '{}', publication_date = '{}', publisher = '{}' where book_id = '{}'".format(title,average_rating,authors,language_code,publication_date,publisher,book_id))
+		connection = mysql.connect()
+		cursor = connection.cursor()
+		query = "UPDATE books set title = %s, average_rating = %s, authors = %s, language_code = %s, publication_date = %s, publisher = %s where book_id = %s"
+		dt = (title,average_rating,authors,language_code,publication_date,publisher,book_id)
+		cursor.execute(query,dt)
+		connection.commit()
 		flash("Book Updated Successfuly !",'success')
 	data = mysql_query("SELECT * from books")
 	return render_template('manage_books.html',data=data)
