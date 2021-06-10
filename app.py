@@ -18,9 +18,10 @@ app.secret_key = "Library Management"
 
 app.config['MYSQL_DATABASE_HOST'] = 'sql6.freesqldatabase.com'
 app.config['MYSQL_DATABASE_USER'] = 'sql6418281'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'k1C1hsCPVJ'
+app.config['MYSQL_DATABASE_PASSWORD'] = os.environ.get('MYSQL_DATABASE_PASSWORD')
 app.config['MYSQL_DATABASE_DB'] = 'sql6418281'
 mysql = MySQL(app)
+
 
 
 #MySQL Query Driver function
