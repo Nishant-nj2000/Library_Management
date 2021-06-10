@@ -12,7 +12,13 @@ a:focus,a:hover,a{
     border-bottom-left-radius: 50px;
     border-bottom-right-radius: 50px;
     text-align: center;
-    padding: 5px 1px 5px 1px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-top: 1px; 
+    padding-bottom: 1px; 
+    padding-left: 1px; 
+    padding-right: 0px;
+    margin-right: 0px;
 }
 
 li,ul{
@@ -30,13 +36,11 @@ li,ul{
     display: table;
 }
 
-.table-member
+.table
 {
-    margin-left: 23px;
-    border-radius: 8px;
-    width: 96.8%;
-    margin-right: 0px;
-    padding-right: 0px;
+    border-radius: 8px; 
+    width: 97%;
+    margin-left: 15px;
 }
 
 .login-header {
@@ -447,13 +451,14 @@ header {
     padding: 21px 0;
 }
 .sales {
-    background: #343a40 none repeat scroll 0 0;
+    background: #212529 none repeat scroll 0 0;
     border: 1px solid #d4d9e3;
     border-radius: 8px;
     display: inline-block;
     padding: 10px;
+    margin-left: 15px;
     padding-right: 0px;
-    width: 100%;
+    width: 97%;
 }
 .sales btn-sales {
     background: #c9c8c8 none repeat scroll 0 0;

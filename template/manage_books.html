@@ -4,15 +4,10 @@
 {% block nav_manage_books %} class = "active" {% endblock %}
 
 {% block searchbox %}
-    <div class="form-inline my-2 my-lg-0 ml-auto">
-        <div class="md-form my-0">
-            <input class="form-control mr-sm-2" style="width: 400px;" type="search" onkeyup="search_books_function()"placeholder="Search here" id="myInput"> <i class="fa fa-search" aria-hidden="true" style="color: green;"></i>
-        </div>
-    </div>
+    <input class="form-control" type="search" onkeyup="search_books_function()" placeholder="Search here" id="myInput">
 {% endblock %}
 
 {% block content %}
-    <br>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -27,20 +22,19 @@
         {% endif %}
     {% endwith %}
 
-    <div class="user-dashboard">
-        <div class="row">
-            <div class="col-md-12 col-sm-7 col-xs-12 gutter">
-                <div class="sales report">
-                    <h2>Manage Books</h2>
-                    <div class="btn-group col-md-4">
-                        <ul class="list-inline header-top my-2 my-lg-0 ml-auto">
-                            <li class="hidden-xs" ><a href="#" class="btn btn-primary btn-md btn-xs" data-toggle="modal" data-target="#add_book"><i class="fa fa-download" aria-hidden="true" style="color: white;"></i> <b>Import Books</b></a></li>
-                        </ul>
-                    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-7 col-xs-12 gutter">
+            <div class="sales report">
+                <h2>Manage Books</h2>
+                <div class="btn-group col-md-4">
+                    <ul class="list-inline header-top my-2 my-lg-0 ml-auto">
+                        <li class="hidden-xs" ><a href="#" class="btn btn-primary btn-md btn-xs" data-toggle="modal" data-target="#add_book"><i class="fa fa-download" aria-hidden="true" style="color: white;"></i> <b>Import Books</b></a></li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
+
 
     <!-- Modal -->
     <div id="add_book" class="modal fade" role="dialog">
@@ -71,7 +65,8 @@
     </div>
 
     <br>
-    <table id="books_table" class="table-member table table-hover table-responsive-lg">
+    {% if data %}
+    <table id="books_table" class="table table-hover table-responsive">
         <thead class="thead-dark">
             <th scope="col">Book Id</th>
             <th scope="col">Book Title</th>
@@ -100,12 +95,13 @@
                     {% else %}
                         <td>{{ x['stock'] }}</td>
                     {% endif %}
-                    <td style="text-align: center;"><button type="submit" name="update" class="btn btn-primary" data-toggle="modal" data-target="#update_book{{ x['book_id'] }}" style="border-radius: 20px;"><i class="fa fa-pencil-square-o circle-icon" aria-hidden="true"></i></button></td>
+                    <td style="text-align: center;"><button type="submit" name="update" class="btn btn-primary" data-toggle="modal" data-target="#update_book{{ x['book_id'] }}" style="border-radius: 20px;"><i class="fas fa-edit circle-icon" aria-hidden="true"></i></button></td>
                     <td style="text-align: center;"><button type="submit" name="delete" class="btn btn-danger" data-toggle="modal" data-target="#delete_book{{ x['book_id'] }}" style="border-radius: 20px;"><i class="fa fa-trash circle-icon" aria-hidden="true"></i></button></td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 
     
     <!-- Modal -->

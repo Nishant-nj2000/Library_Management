@@ -11,7 +11,6 @@ from datetime import datetime
 from datetime import date
 import math
 
-
 app = Flask(__name__,template_folder = 'template')
 
 app.secret_key = "Library Management"
@@ -164,7 +163,7 @@ def update_member():
 		email_id = request.form['email_id']
 		m_address = request.form['address']
 		mysql_query("UPDATE members set m_name = '{}', mobile = '{}', email_id = '{}', m_address = '{}' where member_id = '{}'".format(m_name,mobile,email_id,m_address,member_id))
-		flash("Member Updated Successfuly !",'success')
+		flash("Member Updated Successfully !",'success')
 	data = mysql_query("SELECT * from members")
 	return render_template('manage_members.html',data=data)
 
@@ -266,16 +265,17 @@ def outstanding_settlement():
 	return redirect(url_for('issue_books_page_load'))
 
 
-@app.route('/reports',methods=['POST'])
-def reports():
-	if request.method == 'POST':
-		if 'button2' in request.form:
-			data = mysql_query("SELECT * from members order by total_amount_paid DESC")
-			return render_template('index.html',data = data)
-		if 'button1' in request.form:
-			data2 = mysql_query("SELECT b.book_id,b.title,b.authors,b.publication_date,b.stock,b.total_stock,b.publisher,b.ratings_count,count(t.book_id) from transactions t,books b where b.book_id = t.book_id group by t.book_id order by count(t.book_id) DESC")
-			return render_template('index.html',data2 = data2)
-	return render_template('index.html')
+@app.route('/report1')
+def report1():
+	data = mysql_query("SELECT * from members order by total_amount_paid DESC")
+	return render_template('index.html',data = data)
+
+@app.route('/report2')
+def report2():
+	data2 = mysql_query("SELECT b.book_id,b.title,b.authors,b.publication_date,b.stock,b.total_stock,b.publisher,b.ratings_count,count(t.book_id) from transactions t,books b where b.book_id = t.book_id group by t.book_id order by count(t.book_id) DESC")
+	print(data2)
+	return render_template('index.html',data2 = data2)
+
 
 if __name__ == "__main__":
 	app.run(debug=True)

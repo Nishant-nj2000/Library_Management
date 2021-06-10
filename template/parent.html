@@ -1,264 +1,303 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<html>
 
-        <!-- custom stylesheet -->
-        <link href="{{ url_for('static', filename='dashboard/main.css') }}" rel="stylesheet">
-        
-        <title></title>
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-md navbar-dark" style="background-color:#0e1a35;">
-            <a class="navbar-brand" href="{{url_for('main')}}">Library Management System</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-            
-                {% block searchbox %}
-                
-                {% endblock %}
-            
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <!-- My Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard/style.css') }}">
+    <link href="{{ url_for('static', filename='dashboard/main.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Font Awesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <a href="{{url_for('main')}}"><h3>Library Management</h3></a>
             </div>
+
+            <ul class="list-unstyled components">
+               
+                <li {% block nav_home %} {% endblock %}>
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-file" aria-hidden="true"></i>&nbsp  Reports</a>
+                    <ul class="collapse list-unstyled" id="homeSubmenu">
+                        <li>
+                            <a href="{{url_for('report1')}}">Highest Paying Customer</a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('report2')}}">Most Popular Books</a>
+                        </li>                       
+                    </ul>
+                </li>
+                <li {% block nav_manage_books %} {% endblock %}>
+                    <a href="{{url_for('manage_books')}}"><i class="fa fa-edit" aria-hidden="true"></i>  Manage Books</a>
+                </li>
+                <li {% block nav_manage_members %} {% endblock %}>
+                    <a href="{{url_for('manage_members')}}"><i class="fa fa-edit" aria-hidden="true"></i>  Manage Members</a>
+                </li>
+                <li {% block nav_issue_books %} {% endblock %}>
+                    <a href="{{url_for('issue_books_page_load')}}"><i class="fa fa-book" aria-hidden="true"></i>&nbsp  Issue Books</a>
+                </li>
+            </ul>  
         </nav>
 
-        <body class="home">
-            <div class="container-fluid display-table">
-                <div class="row display-table-row">
-                    <div class="col-md-2 col-sm-1 hidden-xs display-table-cell" id="navigation">                    
-                        <div class="navi">
-                            <ul>
-                                <li {% block nav_home %} {% endblock %}><a href="{{url_for('main')}}"><i class="fa fa-home" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Home</span></a></li>
-                                <li {% block nav_manage_books %} {% endblock %}><a href="{{url_for('manage_books')}}"><i class="fa fa-edit" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Manage Books</span></a></li>
-                                <li {% block nav_manage_members %} {% endblock %}><a href="{{url_for('manage_members')}}"><i class="fa fa-edit" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Manage Members</span></a></li>
-                                <li {% block nav_issue_books %} {% endblock %}><a href="{{url_for('issue_books_page_load')}}"><i class="fa fa-book" aria-hidden="true"></i><span class="hidden-xs hidden-sm">Issue Books</span></a></li>
+        <!-- Page Content  -->
+        <div id="content">
+            <div class="navbar-content">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <div class="container-fluid">
+
+                        <button type="button" id="sidebarCollapse" class="btn btn-dark" style="background-color: #0e1a35;">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <button style="background-color: #0e1a35;" class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <i class="fas fa-align-justify"></i>
+                        </button>
+
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="nav navbar-nav ml-auto">
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="#">
+                                        {% block searchbox %}
+                                        
+                                        {% endblock %}
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#"><button type="button" class="btn btn-danger">Logout</button></a>
+                                </li>
                             </ul>
                         </div>
                     </div>
-
-                    <div class="col-md-10 col-sm-11 display-table-cell v-align">
-                        <div class="row">
-                            <header>
-                                <div class="col-md-7">
-                                    <nav class="navbar-default pull-left">
-                                        <div class="navbar-header">
-                                            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                                                <span class="sr-only">Toggle navigation</span>
-                                                <span class="icon-bar"></span>
-                                                <span class="icon-bar"></span>
-                                                <span class="icon-bar"></span>
-                                            </button>
-                                        </div>
-                                    </nav>
-                                </div>
-                                
-                                <div class="col-md-12">
-                                    <div class="header-rightside">
-                                        <ul class="list-inline header-top my-2 my-lg-0 ml-auto">
-                                            <li class="hidden-xs"> <h3>Welcome</h3> </li>
-                                            <li class="hidden-xs" style="float: right;"><a href="#" class="btn btn-danger btn-md">Logout</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </header>
-                        </div>
-
-                        {% block content %}
-                        {% endblock %}
-
-                    </div>
-                </div>
+                </nav>
             </div>
-
-            <script> 
-                function printDiv() 
-                { 
-                    var divContents = document.getElementById("printdivision").innerHTML; 
-                    var a = window.open('', '', 'height=1080, width=1080'); 
-                    a.document.write('<html>'); 
-                    a.document.write('<body >');
-                    a.document.write(divContents); 
-                    a.document.write('</body></html>'); 
-                    a.document.close(); 
-                    a.print(); 
-                } 
             
-                function fnExcelReport()
-                {
-                    var tab_text="<table border='2px'><tr bgcolor='#007bff'>";
-                    var textRange; var j=0;
-                    tab = document.getElementById('report_table');
+            {% block content %}
+            {% endblock %}
             
-                    for(j = 0 ; j < tab.rows.length ; j++) 
-                    {     
-                        tab_text=tab_text+tab.rows[j].innerHTML+"</tr>";
-                    }
+        </div>
+    </div>
+
+    <!-- jQuery CDN - Slim version (=without AJAX) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+
+        window.setTimeout(function() 
+        {
+        $(".alert").fadeTo(500, 0) 
+
+        }, 2000);
+
+        function printDiv() 
+        { 
+            var sTable = document.getElementById('printdivision').innerHTML;
+
+            var style = "<style>";
+            style = style + "table {width: 100%;font: 17px Calibri;}";
+            style = style + "table, th, td {border: solid 1px #DDD; border-collapse: collapse;";
+            style = style + "padding: 2px 3px;text-align: center;}";
+            style = style + "</style>";
+
             
-                    tab_text=tab_text+"</table>";
-                    tab_text= tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
-                    tab_text= tab_text.replace(/<img[^>]*>/gi,""); // remove if u want images in your table
-            
-                    var ua = window.navigator.userAgent;
-                    var msie = ua.indexOf("MSIE "); 
-            
-                    sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));  
-            
-                    return (sa);
-                }
+            var win = window.open('', '', 'height=700,width=700');
 
-                function search_books_function() 
-                {
-                    var input, filter, table, tr, td, i, txtValue, txtValue2,txtValue3, txtValue4, txtValue5;
-                    input = document.getElementById("myInput");
-                    filter = input.value.toUpperCase();
-                    table = document.getElementById("books_table");
-                    tr = table.getElementsByTagName("tr");
+            win.document.write('<html><head>');
+            win.document.write('<title>Report</title>');   
+            win.document.write(style);         
+            win.document.write('</head>');
+            win.document.write('<body>');
+            win.document.write(sTable);         
+            win.document.write('</body></html>');
 
-                    // Loop through all table rows, and hide those who don't match the search query
-                    for (i = 0; i < tr.length; i++) 
-                    {
-                        td = tr[i].getElementsByTagName("td")[1];
-                        td2 = tr[i].getElementsByTagName("td")[3];
-                        td3 = tr[i].getElementsByTagName("td")[4];
-                        td4 = tr[i].getElementsByTagName("td")[5];
-                        td5 = tr[i].getElementsByTagName("td")[6];
-                        
-                        if (td || td2 || td3 || td4 || td5) 
-                        {
-                            txtValue = td.textContent || td.innerText;
-                            txtValue2 = td2.textContent || td2.innerText;
-                            txtValue3 = td3.textContent || td3.innerText;
-                            txtValue4 = td4.textContent || td4.innerText;
-                            txtValue5 = td5.textContent || td5.innerText;
-                            
+            win.document.close(); 	
 
-                            if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) >-1 || txtValue3.toUpperCase().indexOf(filter) >-1 || txtValue4.toUpperCase().indexOf(filter) >-1 || txtValue5.toUpperCase().indexOf(filter) >-1) 
-                            {
-                                tr[i].style.display = "";
-                            } 
-                            else 
-                            {
-                                tr[i].style.display = "none";
-                            }
-                        }
-                    }
-                }
+            win.print();   
+        }
 
-                function search_member_function() 
-                {
-                    var input, filter, table, tr, td, i, txtValue, txtValue2, txtValue3, txtValue4, txtValue5;
-                    input = document.getElementById("myInput2");
-                    filter = input.value.toUpperCase();
-                    table = document.getElementById("members_table");
-                    tr = table.getElementsByTagName("tr");
+        function fnExcelReport()
+        {
+            var tab_text="<table border='2px'><tr bgcolor='#007bff'>";
+            var textRange; var j=0;
+            tab = document.getElementById('report_table');
+    
+            for(j = 0 ; j < tab.rows.length ; j++) 
+            {     
+                tab_text=tab_text+tab.rows[j].innerHTML+"</tr>";
+            }
+    
+            tab_text=tab_text+"</table>";
+            tab_text= tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
+            tab_text= tab_text.replace(/<img[^>]*>/gi,""); // remove if u want images in your table
+    
+            var ua = window.navigator.userAgent;
+            var msie = ua.indexOf("MSIE "); 
+    
+            sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));  
+    
+            return (sa);
+        }
 
-                    // Loop through all table rows, and hide those who don't match the search query
-                    for (i = 0; i < tr.length; i++) 
-                    {
-                        td = tr[i].getElementsByTagName("td")[1];
-                        td2 = tr[i].getElementsByTagName("td")[2];
-                        td3 = tr[i].getElementsByTagName("td")[3];
-                        td4 = tr[i].getElementsByTagName("td")[4];
-                        td5 = tr[i].getElementsByTagName("td")[5]
-                        
-                        if (td || td2 || td3 || td4 || td5) 
-                        {
-                            txtValue = td.textContent || td.innerText;
-                            txtValue2 = td2.textContent || td2.innerText;
-                            txtValue3 = td3.textContent || td3.innerText;
-                            txtValue4  = td4.textContent || td4.innerText;
-                            txtValue5 = td5.textContent || td5.innerText;
+        function search_books_function() 
+        {
+            var input, filter, table, tr, td, i, txtValue, txtValue2,txtValue3, txtValue4, txtValue5;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("books_table");
+            tr = table.getElementsByTagName("tr");
 
-                            if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1 || txtValue3.toUpperCase().indexOf(filter) > -1 || txtValue4.toUpperCase().indexOf(filter) > -1 || txtValue5.toUpperCase().indexOf(filter) > -1) 
-                            {
-                                tr[i].style.display = "";
-                            } 
-                            else 
-                            {
-                                tr[i].style.display = "none";
-                            }
-                        }
-                    }
-                }
-
-                function search_issued_books_function() 
-                {
-                    var input, filter, table, tr, td, i, txtValue, txtValue2;
-                    input = document.getElementById("myInput3");
-                    filter = input.value.toUpperCase();
-                    table = document.getElementById("issued_books");
-                    tr = table.getElementsByTagName("tr");
-
-                    // Loop through all table rows, and hide those who don't match the search query
-                    for (i = 0; i < tr.length; i++) 
-                    {
-                        td = tr[i].getElementsByTagName("td")[1];
-                        td2 = tr[i].getElementsByTagName("td")[2];
-                        if (td || td2) 
-                        {
-                            txtValue = td.textContent || td.innerText;
-                            txtValue2 = td2.textContent || td2.innerText;
-
-                            if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1) 
-                            {
-                                tr[i].style.display = "";
-                            } 
-                            else 
-                            {
-                                tr[i].style.display = "none";
-                            }
-                        }
-                    }
-                }
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) 
+            {
+                td = tr[i].getElementsByTagName("td")[1];
+                td2 = tr[i].getElementsByTagName("td")[3];
+                td3 = tr[i].getElementsByTagName("td")[4];
+                td4 = tr[i].getElementsByTagName("td")[5];
+                td5 = tr[i].getElementsByTagName("td")[6];
                 
-                
-                function search_reports() 
+                if (td || td2 || td3 || td4 || td5) 
                 {
-                    var input, filter, table, tr, td, i, txtValue, txtValue2, txtValue3;
-                    input = document.getElementById("myInput4");
-                    filter = input.value.toUpperCase();
-                    table = document.getElementById("report_table");
-                    tr = table.getElementsByTagName("tr");
+                    txtValue = td.textContent || td.innerText;
+                    txtValue2 = td2.textContent || td2.innerText;
+                    txtValue3 = td3.textContent || td3.innerText;
+                    txtValue4 = td4.textContent || td4.innerText;
+                    txtValue5 = td5.textContent || td5.innerText;
+                    
 
-                    // Loop through all table rows, and hide those who don't match the search query
-                    for (i = 0; i < tr.length; i++) 
+                    if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) >-1 || txtValue3.toUpperCase().indexOf(filter) >-1 || txtValue4.toUpperCase().indexOf(filter) >-1 || txtValue5.toUpperCase().indexOf(filter) >-1) 
                     {
-                        td = tr[i].getElementsByTagName("td")[1];
-                        td2 = tr[i].getElementsByTagName("td")[2];
-                        td3 = tr[i].getElementsByTagName("td")[3];
-                        
-                        if (td || td2 || td3) 
-                        {
-                            txtValue = td.textContent || td.innerText;
-                            txtValue2 = td2.textContent || td2.innerText;
-                            txtValue3 = td3.textContent || td3.innerText;
-
-                            if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1 || txtValue3.toUpperCase().indexOf(filter) > -1) 
-                            {
-                                tr[i].style.display = "";
-                            } 
-                            else 
-                            {
-                                tr[i].style.display = "none";
-                            }
-                        }
+                        tr[i].style.display = "";
+                    } 
+                    else 
+                    {
+                        tr[i].style.display = "none";
                     }
                 }
+            }
+        }
 
-                window.setTimeout(function() 
-                {
-                $(".alert").fadeTo(500, 0) 
+        function search_member_function() 
+        {
+            var input, filter, table, tr, td, i, txtValue, txtValue2, txtValue3, txtValue4, txtValue5;
+            input = document.getElementById("myInput2");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("members_table");
+            tr = table.getElementsByTagName("tr");
 
-                }, 2000);
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) 
+            {
+                td = tr[i].getElementsByTagName("td")[1];
+                td2 = tr[i].getElementsByTagName("td")[2];
+                td3 = tr[i].getElementsByTagName("td")[3];
+                td4 = tr[i].getElementsByTagName("td")[4];
+                td5 = tr[i].getElementsByTagName("td")[5]
                 
-            </script>
-    </body>
+                if (td || td2 || td3 || td4 || td5) 
+                {
+                    txtValue = td.textContent || td.innerText;
+                    txtValue2 = td2.textContent || td2.innerText;
+                    txtValue3 = td3.textContent || td3.innerText;
+                    txtValue4  = td4.textContent || td4.innerText;
+                    txtValue5 = td5.textContent || td5.innerText;
+
+                    if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1 || txtValue3.toUpperCase().indexOf(filter) > -1 || txtValue4.toUpperCase().indexOf(filter) > -1 || txtValue5.toUpperCase().indexOf(filter) > -1) 
+                    {
+                        tr[i].style.display = "";
+                    } 
+                    else 
+                    {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function search_issued_books_function() 
+        {
+            var input, filter, table, tr, td, i, txtValue, txtValue2;
+            input = document.getElementById("myInput3");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("issued_books");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) 
+            {
+                td = tr[i].getElementsByTagName("td")[1];
+                td2 = tr[i].getElementsByTagName("td")[2];
+                if (td || td2) 
+                {
+                    txtValue = td.textContent || td.innerText;
+                    txtValue2 = td2.textContent || td2.innerText;
+
+                    if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1) 
+                    {
+                        tr[i].style.display = "";
+                    } 
+                    else 
+                    {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        
+        
+        function search_reports() 
+        {
+            var input, filter, table, tr, td, i, txtValue, txtValue2, txtValue3;
+            input = document.getElementById("myInput4");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("report_table");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) 
+            {
+                td = tr[i].getElementsByTagName("td")[1];
+                td2 = tr[i].getElementsByTagName("td")[2];
+                td3 = tr[i].getElementsByTagName("td")[3];
+                
+                if (td || td2 || td3) 
+                {
+                    txtValue = td.textContent || td.innerText;
+                    txtValue2 = td2.textContent || td2.innerText;
+                    txtValue3 = td3.textContent || td3.innerText;
+
+                    if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1 || txtValue3.toUpperCase().indexOf(filter) > -1) 
+                    {
+                        tr[i].style.display = "";
+                    } 
+                    else 
+                    {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        
+        
+    </script>
+</body>
+
 </html>
