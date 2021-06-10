@@ -16,10 +16,10 @@ app = Flask(__name__,template_folder = 'template')
 
 app.secret_key = "Library Management"
 
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'Abcde@123'
-app.config['MYSQL_DATABASE_DB'] = 'library'
+app.config['MYSQL_DATABASE_HOST'] = 'sql6.freesqldatabase.com'
+app.config['MYSQL_DATABASE_USER'] = 'sql6418281'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'k1C1hsCPVJ'
+app.config['MYSQL_DATABASE_DB'] = 'sql6418281'
 mysql = MySQL(app)
 
 
