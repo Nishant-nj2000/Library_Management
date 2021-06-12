@@ -73,11 +73,11 @@ def import_book():
 				list1.append(list2)	
 			for a in list1:
 				for b in range(0,no_of_records):
-					connection = mysql.connect()
-					cursor = connection.cursor()
 					book_id = a['message'][b]['bookID']
 					data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
 					if len(data_check) == 0:
+						connection = mysql.connect()
+						cursor = connection.cursor()
 						sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 						timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
 						dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'])
