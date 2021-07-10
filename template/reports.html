@@ -1,0 +1,94 @@
+<title>Reports</title>
+{% extends 'parent.html'%}
+
+{% block nav_reports %}class = "active" {% endblock %}
+
+{% block searchbox %}
+    <input class="form-control" name="input_value" type="search" placeholder="Search here" id="myInput4" onkeyup="search_reports()">
+{% endblock %}
+    
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-12 col-sm-4">
+            <div class="sales report">
+                <h2>Reports</h2>
+                <div class="btn-group col-md-4">
+                    <ul class="list-inline header-top my-2 my-lg-0 ml-auto">
+                        <li class="hidden-xs" ><button id="pdf" class="btn btn-primary btn-md btn-xs" onclick="printDiv()"><i class="fa fa-file-pdf" aria-hidden="true" style="color: white;"></i> <b>PDF</b></button></li>
+                            &nbsp
+                        <li class="hidden-xs" ><button id="excel" class="btn btn-primary btn-md btn-xs" onclick="fnExcelReport()"><i class="fa fa-file-excel" aria-hidden="true" style="color: white;"></i> <b>XLS</b></button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="printdivision">
+        <br>
+        {% if data %}
+        <h4 align="center"> Report - Highest Paying Customer </h4><br>
+        <table class="table table-hover table-responsive" id="report_table">
+            <thead class="thead-dark">
+                <th scope="col">Member Id</th>
+                <th scope="col">Member Name</th>
+                <th scope="col">Mobile no.</th>
+                <th scope="col">Email Id</th>
+                <th scope="col">Address</th>
+                <th scope="col">Total Amount Paid</th>
+            </thead>
+            {% for x in data %}
+            <tbody>            
+                <tr>
+                    <td>{{ x['member_id'] }}</td>
+                    <td>{{ x['m_name'] }}</td>
+                    <td>{{ x['mobile'] }}</td>
+                    <td>{{ x['email_id'] }}</td>
+                    <td>{{ x['m_address'] }}</td>
+                    <td>{{ x['total_amount_paid'] }}</td>
+                </tr>
+            </tbody>
+            {% endfor %}
+        </table>
+        {% endif %}
+        
+        
+        {% if data2 %}
+        <h4 align="center"> Report - Most Popular Books </h4><br>
+        <table class="table table-hover table-responsive" id="report_table">
+            <thead class="thead-dark">
+                <th scope="col">Book Id</th>
+                <th scope="col">Book Title</th>
+                <th scope="col">Authors</th>
+                <th scope="col">Publisher</th>
+                <th scope="col">Ratings</th>
+                <th scope="col">Publication Date</th>
+                <th scope="col">Available No. of Books</th>
+                <th scope="col">Total Stock</th>
+                <th scope="col">Book issued (times)</th>
+            </thead>
+                
+            <tbody>
+                {% for x in data2 %}
+                    <tr>
+                        <td>{{ x['book_id'] }}</td>
+                        <td>{{ x['title'] }}</td>
+                        <td>{{ x['authors'] }}</td>
+                        <td>{{ x['publisher'] }}</td>
+                        <td>{{ x['ratings_count'] }}</td>
+                        <td>{{ x['publication_date'] }}</td>
+                        {% if x['stock'] == 0 %}
+                            <td style="color:red">{{ x['stock'] }}</button></td>
+                        {% else %}
+                            <td>{{ x['stock'] }}</td>
+                        {% endif %}
+                        <td>{{ x['total_stock'] }}</td>
+                        <td>{{ x['count(t.book_id)'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+{% endblock %}
+

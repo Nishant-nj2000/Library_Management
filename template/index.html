@@ -4,91 +4,127 @@
 {% block nav_home %}class = "active" {% endblock %}
 
 {% block searchbox %}
-    <input class="form-control" name="input_value" type="search" placeholder="Search here" id="myInput4" onkeyup="search_reports()">
+    <input class="form-control" name="input_value" type="search" placeholder="Search here">
 {% endblock %}
     
-{% block content %}
 
+{% block content %}
+<div class="container">
     <div class="row">
-        <div class="col-md-12 col-sm-4">
-            <div class="sales report">
-                <h2>Reports</h2>
-                <div class="btn-group col-md-4">
-                    <ul class="list-inline header-top my-2 my-lg-0 ml-auto">
-                        <li class="hidden-xs" ><button id="pdf" class="btn btn-primary btn-md btn-xs" onclick="printDiv()"><i class="fa fa-file-pdf" aria-hidden="true" style="color: white;"></i> <b>PDF</b></button></li>
-                            &nbsp
-                        <li class="hidden-xs" ><button id="excel" class="btn btn-primary btn-md btn-xs" onclick="fnExcelReport()"><i class="fa fa-file-excel" aria-hidden="true" style="color: white;"></i> <b>XLS</b></button></li>
-                    </ul>
-                </div>
+        <div class="four col-md-3">
+            <div class="counter-box colored"><i class="fa fa-book" aria-hidden="true"></i><span class="counter">{{ total_books_issued }} </span>
+                <p>Total Books Issued</p>
+            </div>
+        </div>
+        <div class="four col-md-3">
+            <div class="counter-box colored"><i class="fa fa-user-circle"></i><span class="counter">{{ registered_members }}</span>
+                <p>Registered Members</p>
+            </div>
+        </div>
+        <div class="four col-md-3">
+            <div class="counter-box colored"> <i class="fa fa-check"></i> <span class="counter">{{ available_books }}</span>
+                <p>Available Books</p>
+            </div>
+        </div>
+        <div class="four col-md-3">
+            <div class="counter-box colored"><i class="fa fa-inr" aria-hidden="true"></i><span class="counter">{{ total_amount_recieved }}</span>
+                <p>Amount Recieved</p>
             </div>
         </div>
     </div>
 
-    <div id="printdivision">
-        <br>
-        {% if data %}
-        <h4 align="center"> Report - Highest Paying Customer </h4><br>
-        <table class="table table-hover table-responsive" id="report_table">
-            <thead class="thead-dark">
-                <th scope="col">Member Id</th>
-                <th scope="col">Member Name</th>
-                <th scope="col">Mobile no.</th>
-                <th scope="col">Email Id</th>
-                <th scope="col">Address</th>
-                <th scope="col">Total Amount Paid</th>
-            </thead>
-            {% for x in data %}
-            <tbody>            
-                <tr>
-                    <td>{{ x['member_id'] }}</td>
-                    <td>{{ x['m_name'] }}</td>
-                    <td>{{ x['mobile'] }}</td>
-                    <td>{{ x['email_id'] }}</td>
-                    <td>{{ x['m_address'] }}</td>
-                    <td>{{ x['total_amount_paid'] }}</td>
-                </tr>
-            </tbody>
-            {% endfor %}
-        </table>
-        {% endif %}
-        
-        
-        {% if data2 %}
-        <h4 align="center"> Report - Most Popular Books </h4><br>
-        <table class="table table-hover table-responsive" id="report_table">
-            <thead class="thead-dark">
-                <th scope="col">Book Id</th>
-                <th scope="col">Book Title</th>
-                <th scope="col">Authors</th>
-                <th scope="col">Publisher</th>
-                <th scope="col">Ratings</th>
-                <th scope="col">Publication Date</th>
-                <th scope="col">Available No. of Books</th>
-                <th scope="col">Total Stock</th>
-                <th scope="col">Book issued (times)</th>
-            </thead>
-                
-            <tbody>
-                {% for x in data2 %}
-                    <tr>
-                        <td>{{ x['book_id'] }}</td>
-                        <td>{{ x['title'] }}</td>
-                        <td>{{ x['authors'] }}</td>
-                        <td>{{ x['publisher'] }}</td>
-                        <td>{{ x['ratings_count'] }}</td>
-                        <td>{{ x['publication_date'] }}</td>
-                        {% if x['stock'] == 0 %}
-                            <td style="color:red">{{ x['stock'] }}</button></td>
-                        {% else %}
-                            <td>{{ x['stock'] }}</td>
-                        {% endif %}
-                        <td>{{ x['total_stock'] }}</td>
-                        <td>{{ x['count(t.book_id)'] }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn btn-secondary" style="float: right;" data-toggle="collapse" data-target="#demo"><i class="fa fa-question-circle circle-icon" aria-hidden="true"></i> Help </button> <br><br>
+        </div>
     </div>
-{% endblock %}
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div id="demo" class="collapse">
+                <div id="accordion">
+                    <div class="card" style="border-radius: 10px;">
+                      <div class="card-header" id="headingOne" style="background-color: #0e1a35; border-radius: 10px;">
+                        <h5 class="mb-0">
+                          <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none; color: white; width: 100%; text-align: left;">
+                            Manage Books
+                          </button>
+                        </h5>
+                      </div>
+                      <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body" style="background-color: azure;">
+                          <strong><h5>Add Book</h5></strong>
+                          <p>- This will add a book directly to the database alongwith the details you provide while <a href="{{url_for('manage_books')}}" style="color: #0e1a35;">adding a new book.</a></p>
 
+                          <strong><h5>Import Book</h5></strong>
+                          <p>- This will import the available quantities of specific book present in the api to the database.</p>
+                          <p>-This can also import specific number of random books present in the api to the database, if no parameters were given.</p>
+
+                          <strong><h5>Update Book</h5></strong>
+                          <p>- This will open a modal box with details of particular book already filled, the user can edit any of the fields submit the same for getting the book updated.</p>
+
+                          <strong><h5>Delete Book</h5></strong>
+                          <p>- This will delete the book permanently from the database.</p>
+
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card" style="border-radius: 10px;">
+                      <div class="card-header" id="headingTwo" style="background-color: #0e1a35; border-radius: 10px;">
+                        <h5 class="mb-0">
+                          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="text-decoration: none; color: white; width: 100%; text-align: left;">
+                            Manage Members
+                          </button>
+                        </h5>
+                      </div>
+                      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                        <div class="card-body" style="background-color: azure;">
+                            <strong><h5>Add Member</h5></strong>
+                            <p>- This will add a member directly to the database alongwith the details you provide while <a href="{{url_for('manage_members')}}" style="color: #0e1a35;">adding a new member.</a></p>
+                            
+                            <strong><h5>Update Member</h5></strong>
+                            <p>- This will open a modal box with details of member already filled, the user can change any of the details and submit the same for updating the member details.</p>
+
+                            <strong><h5>Delete Member</h5></strong>
+                            <p>- This will This will delete the member permanently from the database.</p>
+
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card" style="border-radius: 10px;">
+                      <div class="card-header" id="headingThree" style="background-color: #0e1a35; border-radius: 10px;">
+                        <h5 class="mb-0">
+                          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="text-decoration: none; color: white; width: 100%; text-align: left;">
+                            Issue Books
+                          </button>
+                        </h5>
+                      </div>
+                      <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                        <div class="card-body" style="background-color: azure;">
+                            <strong><h5>Issuing a Book</h5></strong>
+                            <p>- The book name can be selected from the autocomplete dropdown.</p>
+                            <p>- Then the member name can be selected from another autocomplete dropdown.</p>
+                            <p>- Clicking submit will issue the book to the particular member while <a href="{{url_for('issue_books_page_load')}}" style="color: #0e1a35;">issuing a book.</a></p>
+
+                            <strong><h5>Returning a Book</h5></strong>
+                            <p>- Once the member returns a book two options for Rent Paid will be asked Yes or No.</p>
+                            <p>- If Yes, then the no outstanding amount will be recorded for the user.</p>
+                            <p>- If No, then the particular amount to be collected will be transfered to the outstanding amount.</p>
+
+                            <strong><h5>Outstanding Amount Settlement</h5></strong>
+                            <p>- The outstanding amount settlement can be cleared by timely partial payments and complete payment at once.</p>
+
+                            <strong><h5>Terms</h5></strong>
+                            <p>- Same member cannot be issued a particular book for the second time if not returned the same by him/her.</p>
+                            <p>- A member's outstanding amount should not be greater than 500 otherwise the book cannot be issued to that member.</p>
+                            <p>- A member can only be issued 2 book at once. After that return a book to issue another.</p>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

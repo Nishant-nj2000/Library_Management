@@ -50,7 +50,15 @@ def mysql_query(sql):
 	
 @app.route('/')
 def main():
-	return render_template('index.html')
+	total_books_issued = mysql_query("SELECT count(t_id) as total_books_issued from transactions")
+	total_books_issued = total_books_issued[0]['total_books_issued']
+	registered_members = mysql_query("SELECT count(member_id) as registered_members from members")
+	registered_members = registered_members[0]['registered_members']
+	available_books = mysql_query("SELECT sum(stock) as available_books from books")
+	available_books = available_books[0]['available_books']
+	total_amount_recieved = mysql_query("SELECT sum(total_amount_paid) as total_amount_recieved from members")
+	total_amount_recieved = total_amount_recieved[0]['total_amount_recieved']
+	return render_template('index.html',total_books_issued = total_books_issued, registered_members = registered_members, available_books = available_books, total_amount_recieved = total_amount_recieved)
 
 @app.route('/import_book', methods=['POST'])
 def import_book():
@@ -176,6 +184,17 @@ def delete_member():
 	data = mysql_query("SELECT * from members")
 	return render_template('manage_members.html',data=data)
 
+@app.route('/terms_check',methods=['POST'])
+def terms_check():
+	if request.method == 'POST':
+		value = request.form['terms_checkbox']
+		if value == '':
+			return redirect(url_for('main'))
+		else:
+			return redirect(url_for('issue_books_page_load'))
+    			
+
+
 @app.route('/issue_books_page_load')
 def issue_books_page_load():
 	data = mysql_query("SELECT book_id,title from books")
@@ -268,13 +287,13 @@ def outstanding_settlement():
 @app.route('/report1')
 def report1():
 	data = mysql_query("SELECT * from members order by total_amount_paid DESC")
-	return render_template('index.html',data = data)
+	return render_template('reports.html',data = data)
 
 @app.route('/report2')
 def report2():
 	data2 = mysql_query("SELECT b.book_id,b.title,b.authors,b.publication_date,b.stock,b.total_stock,b.publisher,b.ratings_count,count(t.book_id) from transactions t,books b where b.book_id = t.book_id group by t.book_id order by count(t.book_id) DESC")
 	print(data2)
-	return render_template('index.html',data2 = data2)
+	return render_template('reports.html',data2 = data2)
 
 
 if __name__ == "__main__":
