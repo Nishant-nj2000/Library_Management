@@ -1,7 +1,10 @@
 # Library_Management
 
 Dashboard
-![image](https://user-images.githubusercontent.com/72196083/121775930-ebbde600-cba7-11eb-87c0-e85dbbbb2638.png)
+
+**Home**
+![image](https://user-images.githubusercontent.com/72196083/125176349-55a1cd80-e1f0-11eb-8f22-390da7c7dea1.png)
+![image](https://user-images.githubusercontent.com/72196083/125176362-66eada00-e1f0-11eb-815a-648bdf4e14a9.png)
 
 **Manage Books**
 ![image](https://user-images.githubusercontent.com/72196083/121776013-553df480-cba8-11eb-99cb-3fce8f12a9f9.png)
