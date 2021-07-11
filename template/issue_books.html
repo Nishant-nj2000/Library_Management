@@ -23,47 +23,46 @@
     {% endwith %}
 
     
-        <form method="POST" action="{{ url_for('issue_book') }}">
-            <div class="row">
-                <div class="col-md-12 col-sm-4 col-xs-4">
-                    <div class="sales report">
-                        <h2>Issue Books</h2>
-                        <div class="btn-group col-md-10 col-sm-4">
-                            <ul class="list-inline header-top col-md-7 ml-auto">
-                                <li class="hidden-xs">
-                                    <select name="book_id" class="form-control js-select2-plugin form-control-sm">
-                                        <option value=0>Select Book</option>
-                                        {% for x in data %}
-                                            <option value="{{ x['book_id'] }}">{{ x['title'] }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </li>
-                            </ul>
-                            
-                            <ul class="list-inline header-top col-md-3 ml-auto">
-                                <li class="hidden-xs" > 
-                                    <select name="member_id" class="form-control js-select2-plugin form-control-sm" style="width: 200px;">
-                                        <option value=0>Select Member</option>
-                                        {% for x in data1 %}
-                                            <option value="{{ x['member_id'] }}">{{ x['m_name'] }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </li>
-                            </ul>
-
-                            {% for x in data3 %}
-                                <input type="hidden" name="outstanding_amount" value="{{ x['outstanding_amount'] }}">
-                            {% endfor %}
-                            
-                            <ul class="list-inline header-top">
-                                <li class="hidden-xs"><button type="submit" name="button1" class="btn btn-primary btn-md"><i class="fa fa-check" aria-hidden="true" style="color: white;"></i> <b>Issue Book</b></a></li> 
-                            </ul>
-                        </div>
+    <form method="POST" action="{{ url_for('issue_book') }}">
+        <div class="row">
+            <div class="col-md-12 col-sm-4 col-xs-4">
+                <div class="sales report">
+                    <h2>Issue Books</h2>
+                    <div class="btn-group col-md-8 col-sm-4">
+                        <ul class="list-inline header-top col-md-7 ml-auto">
+                            <li class="hidden-xs">
+                                <select name="book_id" class="form-control js-select2-plugin form-control-sm">
+                                    <option value=0>Select Book</option>
+                                    {% for x in data %}
+                                        <option value="{{ x['book_id'] }}">{{ x['title'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </li>
+                        </ul>
+                        
+                        <ul class="list-inline header-top col-md-3">
+                            <li class="hidden-xs" > 
+                                <select name="member_id" class="form-control js-select2-plugin form-control-lg">
+                                    <option value=0>Select Member</option>
+                                    {% for x in data1 %}
+                                        <option value="{{ x['member_id'] }}">{{ x['m_name'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </li>
+                        </ul>
+    
+                        {% for x in data3 %}
+                            <input type="hidden" name="outstanding_amount" value="{{ x['outstanding_amount'] }}">
+                        {% endfor %}
+                        
+                        <ul class="list-inline header-top">
+                            <li class="hidden-xs"><button type="submit" name="button1" class="btn btn-primary btn-md"><i class="fa fa-check" aria-hidden="true" style="color: white;"></i> <b>Issue Book</b></a></li> 
+                        </ul>
                     </div>
                 </div>
             </div>
-        </form>
-    
+        </div>
+    </form>
 
     <br>
     {% if data3 %}
@@ -185,5 +184,7 @@
             </div>
         </div>
     {% endfor %}
+
+
 
 {% endblock %}
