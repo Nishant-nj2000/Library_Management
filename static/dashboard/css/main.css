@@ -620,6 +620,7 @@ header {
 .modal-header.login-header {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
+}
 /*Main CSS*/
 
 @media only screen and (max-device-width: 767px) {
@@ -715,6 +716,11 @@ header {
 .gutter{
     padding: 0;
 }
+
+.js-select2-plugin
+{
+    width:40%;
+}
 }
 
 @media only screen and (max-device-width: 992px) {
@@ -751,6 +757,11 @@ header {
     .user-dashboard .sales h2 {
     font-size: 15px;
 }
+
+    .js-select2-plugin
+    {
+        width:50%;
+    }
 }
 @media only screen and (min-device-width:998px) and (max-device-width: 1350px)
 {
@@ -759,6 +770,10 @@ header {
     padding: 16px 0 17px;
     width: 100%;
 }
+    .js-select2-plugin
+    {
+        width:30%;
+    }
 }
 
 @media only screen and (min-device-width: 100px) and (max-device-width: 767px)
@@ -767,5 +782,9 @@ header {
     {
         width:100%;
     }
-}
+    
+    .js-select2-plugin
+    {
+        width:10%;
+    }
 }

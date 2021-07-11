@@ -1,0 +1,38 @@
+{% extends 'parent.html'%}
+
+{% block searchbox %}
+    <input class="form-control" type="search" placeholder="Search here" id="myInput3" onkeyup="search_issued_books_function()">
+{% endblock %}
+
+{% block content %}
+    <div id="myModal" class="modal fade" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header login-header">
+                    <a href="{{url_for('main')}}"><button type="button" class="close">×</button></a>
+                    <h4 class="modal-title">Terms of Service</h4>
+                </div>
+                <form method="POST" action="{{url_for('terms_checked')}}">
+                    <div class="modal-body">
+                        1. Outstanding Amount cannot be more than ₹500 of a particular member.<br><br>
+                        2. A Member cannot be issued same book if the previous one is not returned.<br><br>
+                        3. A Member can be issued only 2 books at a time, return one to issue more further.<br><br>
+                        <div class="row">
+                            <div class="col-md-1 col-sm-1" style="padding-right: 0px; padding-left: 0px;">
+                                <input type="checkbox" id="terms_checkbox" name="terms_checkbox" class="terms_checkbox" required>
+                            </div>
+                            <div class="col-md-11 col-sm-11" style="padding-left: 0px;">
+                                I accept the terms of service.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{url_for('main')}}"><button type="button" class="cancel">Close</button></a>
+                        <button type="submit" name="continue" class="close_model add-project">Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

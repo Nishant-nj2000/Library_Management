@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard/css/style.css') }}">
     <link href="{{ url_for('static', filename='dashboard/css/main.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='dashboard/css/homepage.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='dashboard/css/select2.css') }}" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css">
     <!-- Font Awesome JS -->
@@ -48,7 +50,7 @@
                     <a href="{{url_for('manage_members')}}"><i class="fa fa-edit" aria-hidden="true"></i>  Manage Members</a>
                 </li>
                 <li {% block nav_issue_books %} {% endblock %}>
-                    <a href="{{url_for('issue_books_page_load')}}"><i class="fa fa-book" aria-hidden="true"></i>&nbsp  Issue Books</a>
+                    <a href="{{url_for('terms')}}"><i class="fa fa-book" aria-hidden="true"></i>&nbsp  Issue Books</a>
                 </li>
             </ul>  
         </nav>
@@ -96,10 +98,14 @@
     <!-- Bootstrap JS -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 
     <script>
-        $(document).ready(function(){
+        $(document).ready(function()
+        {
             $("#myModal").modal('show');
+            $(".js-select2-plugin").select2();
         });
     </script>
     
@@ -109,12 +115,6 @@
                 $('#sidebar').toggleClass('active');
             });
         });
-
-        window.setTimeout(function() 
-        {
-        $(".alert").fadeTo(500, 0) 
-
-        }, 2000);
 
         function printDiv() 
         { 

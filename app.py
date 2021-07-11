@@ -184,17 +184,14 @@ def delete_member():
 	data = mysql_query("SELECT * from members")
 	return render_template('manage_members.html',data=data)
 
-@app.route('/terms_check',methods=['POST'])
-def terms_check():
-	if request.method == 'POST':
-		value = request.form['terms_checkbox']
-		if value == '':
-			return redirect(url_for('main'))
-		else:
-			return redirect(url_for('issue_books_page_load'))
-    			
+@app.route('/terms')
+def terms():
+    return render_template('terms.html')
 
-
+@app.route('/terms_checked',methods=['POST'])
+def terms_checked():
+    return redirect(url_for('issue_books_page_load'))
+			
 @app.route('/issue_books_page_load')
 def issue_books_page_load():
 	data = mysql_query("SELECT book_id,title from books")
@@ -221,13 +218,13 @@ def issue_book():
 				title = stock[0]['title']
 				
 				if len(record) != 0 and record[0]['return_date'] == None :
-					flash("Book already issued to "+m_name+" !" ,'warning')
+					flash(title+" book is already issued to "+m_name+" !" ,'warning')
 				elif len(issues_of_books) != 0 and issues_of_books[0]['total_issues_without_return'] == 2:
-					flash(m_name+" has already been issued 2 books ! Return some to proceed !" ,'danger')
+					flash(m_name+" has already been issued 2 books which are not returned yet ! Return some to proceed." ,'danger')
 				elif len(stock) != 0 and stock[0]['stock'] == 0:
-					flash(title+" is Out of Stock" ,'warning')
+					flash(title+" book is Out of Stock ! It will be right back soon." ,'warning')
 				elif len(total_outstandings) != 0 and total_outstandings[0]['total_outstandings'] > 500:
-					flash("Total Outstandings Exceeds ₹500 for "+m_name ,'danger')
+					flash("Total Outstandings for "+m_name+" Exceeds ₹500 ! Clear the outstanding amount." ,'danger')
 				else:
 					mysql_query("UPDATE books set stock = stock - {} where book_id = '{}'".format(1,book_id))
 					mysql_query("INSERT into transactions(book_id,member_id,issue_date) values ('{}','{}','{}')".format(book_id,member_id,issue_date))
