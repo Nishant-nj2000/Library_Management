@@ -94,9 +94,10 @@ def import_book():
 							cursor.execute(sql,dt)
 							print(no_of_records)
 							connection.commit()
+							flash("The '"+title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
+							break
 						else:
 							flash("The '"+title+"' book already exists ! try updating the stock.",'warning') 
-					flash("The '"+title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
 				except:
 					for b in range(1,no_of_records):
 						book_id = a['message'][b]['bookID']
@@ -110,9 +111,10 @@ def import_book():
 							cursor.execute(sql,dt)
 							print(no_of_records)
 							connection.commit()
+							flash("The '"+title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
+							break
 						else:
 							flash("The '"+title+"' book already exists ! try updating the stock",'warning') 
-					flash("The '"+title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
 			return redirect(url_for('manage_books'))
 	except:
 			return redirect(url_for('manage_books'))
