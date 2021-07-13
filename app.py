@@ -65,6 +65,7 @@ def import_book():
 	try:
 		if request.method == 'POST':
 			no_of_records = request.form['no_of_records']
+			String_no_of_records = no_of_records
 			no_of_records = int(no_of_records)
 			title = request.form['title']
 			authors = request.form['authors']
@@ -80,29 +81,46 @@ def import_book():
 				list2 = request_data.json()
 				list1.append(list2)	
 			for a in list1:
-				for b in range(0,no_of_records):
-					book_id = a['message'][b]['bookID']
-					data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
-					if len(data_check) == 0:
-						connection = mysql.connect()
-						cursor = connection.cursor()
-						sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-						timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
-						dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'])
-						cursor.execute(sql,dt)
-						connection.commit()
-					else:
-						mysql_query("UPDATE books set stock = stock + {}, total_stock = total_stock + {} where book_id = '{}'".format(1,1,book_id,))
-				flash("Books Imported Successfully !",'success')
+				try:
+					for b in range(0,no_of_records):
+						book_id = a['message'][b]['bookID']
+						data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
+						if len(data_check) == 0:
+							connection = mysql.connect()
+							cursor = connection.cursor()
+							sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count,stock,total_stock) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+							timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
+							dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'],no_of_records,no_of_records)
+							cursor.execute(sql,dt)
+							print(no_of_records)
+							connection.commit()
+						else:
+							flash("The '"+title+"' book already exists ! try updating the stock.",'warning') 
+					flash("The '"+title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
+				except:
+					for b in range(1,no_of_records):
+						book_id = a['message'][b]['bookID']
+						data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
+						if len(data_check) == 0:
+							connection = mysql.connect()
+							cursor = connection.cursor()
+							sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count,stock,total_stock) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+							timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
+							dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'],no_of_records,no_of_records)
+							cursor.execute(sql,dt)
+							print(no_of_records)
+							connection.commit()
+						else:
+							flash("The '"+title+"' book already exists ! try updating the stock",'warning') 
+					flash("The '"+title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
 			return redirect(url_for('manage_books'))
 	except:
-			flash("Sufficient Records not found !",'warning') 
 			return redirect(url_for('manage_books'))
 
 
 @app.route('/manage_books')
 def manage_books():
-	data = mysql_query("SELECT * from books")
+	data = mysql_query("SELECT * from books order by title ASC")
 	data1 = mysql_query("SELECT language_code from books")
 	return render_template('manage_books.html',data=data,data1=data1)
 
@@ -116,15 +134,17 @@ def update_book():
 		language_code = request.form['language_code']
 		publication_date = request.form['publication_date']
 		publisher = request.form['publisher']
+		stock = request.form['stock']
 		connection = mysql.connect()
 		cursor = connection.cursor()
-		query = "UPDATE books set title = %s, average_rating = %s, authors = %s, language_code = %s, publication_date = %s, publisher = %s where book_id = %s"
-		dt = (title,average_rating,authors,language_code,publication_date,publisher,book_id)
+		query = "UPDATE books set title = %s, average_rating = %s, authors = %s, language_code = %s, publication_date = %s, publisher = %s, stock = %s where book_id = %s"
+		dt = (title,average_rating,authors,language_code,publication_date,publisher,stock,book_id)
 		cursor.execute(query,dt)
 		connection.commit()
-		flash("Book Updated Successfuly !",'success')
-	data = mysql_query("SELECT * from books")
-	return render_template('manage_books.html',data=data)
+		updated_stock = mysql_query("SELECT stock from books where book_id = '{}'".format(book_id))
+		stock = str(updated_stock[0]['stock'])
+		flash("The '"+title+"' Book Updated Successfully ! updated stock is '"+stock+"'",'success')
+	return redirect(url_for('manage_books'))
 
 @app.route('/delete_book', methods=['POST'])
 def delete_book():
@@ -132,8 +152,7 @@ def delete_book():
 		book_id = request.form['book_id']
 		mysql_query("DELETE from books where book_id = '{}'".format(book_id))
 		flash("Book Deleted Successfuly !",'warning')
-	data = mysql_query("SELECT * from books")
-	return render_template('manage_books.html',data=data)
+	return redirect(url_for('manage_books'))
 
 
 @app.route('/manage_members')

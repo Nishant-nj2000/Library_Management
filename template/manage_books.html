@@ -12,7 +12,7 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="width:50%; margin-left: 20px;">
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="width:70%; margin-left: 20px;">
                     <span>{{ message }}</span>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">×</span>
@@ -28,14 +28,14 @@
                 <h2>Manage Books</h2>
                 <div class="btn-group col-md-4">
                     <ul class="list-inline header-top my-2 my-lg-0 ml-auto">
-                        <li class="hidden-xs" ><a href="#" class="btn btn-primary btn-md btn-xs" data-toggle="modal" data-target="#add_book"><i class="fa fa-download" aria-hidden="true" style="color: white;"></i> <b>Import Books</b></a></li>
+                        <li class="hidden-xs"><a href="#" class="btn btn-primary btn-md btn-xs" data-toggle="modal" data-target="#add_book"><b>+ Add Books</b></a></li>
                     </ul>
+                    
                 </div>
             </div>
         </div>
     </div>
-
-
+    
     <!-- Modal -->
     <div id="add_book" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -43,12 +43,13 @@
             <div class="modal-content">
                 <div class="modal-header login-header">
                     <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h4 class="modal-title">Import Books</h4>
+                    <h4 class="modal-title">Add Books</h4>
                 </div>
                 <form method="POST" action="{{url_for('import_book')}}">
                     <div class="modal-body">
+                        <p style="margin-bottom:0px;">Number of Books to Add</p>
                         <input type="number" min="1" value="1" placeholder="Enter No. of Books to import" name="no_of_records" required>
-                        <p>Import Using ↓</p>
+                        <p>Add Using ↓</p>
                         <input type="text" placeholder="Book Title" name="title">
                         <input type="text" placeholder="Book Authors" name="authors">
                         <input type="text" placeholder="ISBN" name="isbn">
@@ -88,7 +89,7 @@
                     <td>{{ x['average_rating'] }}</td>
                     <td>{{ x['authors'] }}</td>
                     <td>{{ x['language_code'] }}</td>
-                    <td>{{ x['publication_date'] }}</td>
+                    <td nowrap >{{ x['publication_date'] }}</td>
                     <td>{{ x['publisher'] }}</td>
                     {% if x['stock'] == 0 %}
                         <td style="padding-left:7px;"><button type="button" name="update" class="btn btn-danger" data-toggle="modal" data-target="#import_book{{ x['book_id'] }}" style="border-radius: 20px;">N/A</button></td>
@@ -146,17 +147,25 @@
                     </div>
                     <form method="POST" action="{{url_for('update_book')}}" name="update_book">
                         <div class="modal-body">
+                            <p style="margin-bottom:0px;">Book Title</p>
                             <textarea placeholder="Book Title" name="title" required>{{ x['title'] }}</textarea>
+                            <p style="margin-bottom:0px;">Average Rating</p>
                             <input type="number" placeholder="Average Rating" name="average_rating" value="{{ x['average_rating'] }}" required>
+                            <p style="margin-bottom:0px;">Authors</p>
                             <input type="text" placeholder="Authors" name="authors" value="{{ x['authors'] }}" required>
+                            <p style="margin-bottom:0px;">Language</p>
                             <select name="language_code">
                                 <option value="{{ x['language_code'] }}">{{ x['language_code'] }}</option>
                                 {% for x in data1 %}
                                     <option>{{ x['language_code'] }}</option>
                                 {% endfor %}
                             </select>
+                            <p style="margin-bottom:0px;">Publication Date</p>
                             <input type="date" placeholder="Publication Date" name="publication_date" value="{{ x['publication_date'] }}" required>
+                            <p style="margin-bottom:0px;">Publisher Name</p>
                             <input type="text" placeholder="Publisher" name="publisher" value="{{ x['publisher'] }}" required>
+                            <p style="margin-bottom:0px;">Stock</p>
+                            <input type="number" placeholder="Stock" name="stock" value="{{ x['stock'] }}" required min="{{ x['stock'] }}">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="cancel" data-dismiss="modal">Close</button>
