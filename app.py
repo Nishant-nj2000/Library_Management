@@ -190,7 +190,7 @@ def update_member():
 		email_id = request.form['email_id']
 		m_address = request.form['address']
 		mysql_query("UPDATE members set m_name = '{}', mobile = '{}', email_id = '{}', m_address = '{}' where member_id = '{}'".format(m_name,mobile,email_id,m_address,member_id))
-		flash("Member Updated Successfully !",'success')
+		flash("'"+m_name+"'s details Updated Successfully !",'success')
 	data = mysql_query("SELECT * from members")
 	return render_template('manage_members.html',data=data)
 

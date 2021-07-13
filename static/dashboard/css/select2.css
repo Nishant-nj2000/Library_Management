@@ -483,7 +483,9 @@
 
     @media (max-width:700px){
       .select2-container{
-       width: 20px;
+       width: 60px;
+       padding-left: 0px;
+       left:0px;
       }
 
 
