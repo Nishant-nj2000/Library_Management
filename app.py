@@ -39,14 +39,24 @@ def mysql_query(sql):
 		connection.close()
 		return data
 	if sql.strip().split(' ')[0].lower() != "select" :
-		cursor.execute(sql)
-		print(cursor._executed)
+		try:
+			converted_query = sql.strip().lower().replace("'","")
+		except:
+			pass
+		try:
+			converted_query = sql.strip().lower().replace(" ' "," \\' ")
+		except:
+			pass
+		try:
+			converted_query = sql.strip().lower().replace("' "," \\' ")
+		except:
+			pass	
+		print(converted_query)
+		cursor.execute(converted_query)
 		connection.commit()
 		cursor.close()
 		connection.close()
 		return None
-
-
 	
 @app.route('/')
 def main():
@@ -59,6 +69,65 @@ def main():
 	total_amount_recieved = mysql_query("SELECT sum(total_amount_paid) as total_amount_recieved from members")
 	total_amount_recieved = total_amount_recieved[0]['total_amount_recieved']
 	return render_template('index.html',total_books_issued = total_books_issued, registered_members = registered_members, available_books = available_books, total_amount_recieved = total_amount_recieved)
+
+# @app.route('/import_book', methods=['POST'])
+# def import_book():
+# 	try:
+# 		if request.method == 'POST':
+# 			no_of_records = request.form['no_of_records']
+# 			String_no_of_records = no_of_records
+# 			no_of_records = int(no_of_records)
+# 			title = request.form['title']
+# 			authors = request.form['authors']
+# 			isbn = request.form['isbn']
+# 			publisher = request.form['publisher']
+# 			list1 = []
+# 			page = no_of_records/20
+# 			rounded_value = math.ceil(page)
+# 			#using loop for inserting n number of records 
+# 			for b in range(1,rounded_value+1):
+# 				list2 = []
+# 				request_data = requests.get("https://frappe.io/api/method/frappe-library?page={}&title={}&authors={}&isbn={}&publisher={}".format(b,title,authors,isbn,publisher))
+# 				list2 = request_data.json()
+# 				list1.append(list2)	
+# 			for a in list1:
+# 				try:
+# 					for b in range(0,no_of_records):
+# 						book_id = a['message'][b]['bookID']
+# 						data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
+# 						if len(data_check) == 0:
+# 							connection = mysql.connect()
+# 							cursor = connection.cursor()
+# 							sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count,stock,total_stock) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+# 							timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
+# 							dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'],no_of_records,no_of_records)
+# 							cursor.execute(sql,dt)
+# 							print(no_of_records)
+# 							connection.commit()
+# 							flash("The '"+title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
+# 							break
+# 						else:
+# 							flash("The '"+title+"' book already exists ! try updating the stock.",'warning') 
+# 				except:
+# 					for b in range(1,no_of_records):
+# 						book_id = a['message'][b]['bookID']
+# 						data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
+# 						if len(data_check) == 0:
+# 							connection = mysql.connect()
+# 							cursor = connection.cursor()
+# 							sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count,stock,total_stock) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+# 							timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
+# 							dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'],no_of_records,no_of_records)
+# 							cursor.execute(sql,dt)
+# 							print(no_of_records)
+# 							connection.commit()
+# 							flash("The '"+title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
+# 							break
+# 						else:
+# 							flash("The '"+title+"' book already exists ! try updating the stock",'warning') 
+# 			return redirect(url_for('manage_books'))
+# 	except:
+# 			return redirect(url_for('manage_books'))
 
 @app.route('/import_book', methods=['POST'])
 def import_book():
@@ -86,14 +155,8 @@ def import_book():
 						book_id = a['message'][b]['bookID']
 						data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
 						if len(data_check) == 0:
-							connection = mysql.connect()
-							cursor = connection.cursor()
-							sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count,stock,total_stock) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 							timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
-							dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'],no_of_records,no_of_records)
-							cursor.execute(sql,dt)
-							print(no_of_records)
-							connection.commit()
+							mysql_query("INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count,stock,total_stock) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'],no_of_records,no_of_records))
 							flash("The '"+title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
 							break
 						else:
@@ -103,14 +166,8 @@ def import_book():
 						book_id = a['message'][b]['bookID']
 						data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
 						if len(data_check) == 0:
-							connection = mysql.connect()
-							cursor = connection.cursor()
-							sql = "INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count,stock,total_stock) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
 							timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
-							dt = (a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'],no_of_records,no_of_records)
-							cursor.execute(sql,dt)
-							print(no_of_records)
-							connection.commit()
+							mysql_query("INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count,stock,total_stock) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(a['message'][b]['bookID'],a['message'][b]['title'],a['message'][b]['authors'],a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,a['message'][b]['publisher'],a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'],no_of_records,no_of_records))
 							flash("The '"+title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
 							break
 						else:
@@ -118,6 +175,8 @@ def import_book():
 			return redirect(url_for('manage_books'))
 	except:
 			return redirect(url_for('manage_books'))
+
+
 
 
 @app.route('/manage_books')
@@ -180,8 +239,7 @@ def add_member():
 			return render_template('manage_members.html',data=data)
 	elif request.method == 'POST':
 		flash('Please fill the form !','error')
-	data = mysql_query("SELECT * from members")
-	return render_template('manage_members.html',data=data)
+	return redirect(url_for('manage_members'))
 
 @app.route('/update_member',methods=['POST'])
 def update_member():
@@ -193,8 +251,7 @@ def update_member():
 		m_address = request.form['address']
 		mysql_query("UPDATE members set m_name = '{}', mobile = '{}', email_id = '{}', m_address = '{}' where member_id = '{}'".format(m_name,mobile,email_id,m_address,member_id))
 		flash("'"+m_name+"'s details Updated Successfully !",'success')
-	data = mysql_query("SELECT * from members")
-	return render_template('manage_members.html',data=data)
+	return redirect(url_for('manage_members'))
 
 @app.route('/delete_member',methods=['POST'])
 def delete_member():
@@ -202,8 +259,7 @@ def delete_member():
 		member_id = request.form['member_id']
 		mysql_query("DELETE from members where member_id = '{}'".format(member_id))
 		flash("Member Deleted Successfuly !",'warning')
-	data = mysql_query("SELECT * from members")
-	return render_template('manage_members.html',data=data)
+	return redirect(url_for('manage_members'))
 
 @app.route('/terms')
 def terms():
