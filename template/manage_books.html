@@ -50,7 +50,7 @@
                         <p style="margin-bottom:0px;">Number of Books to Add</p>
                         <input type="number" min="1" value="1" placeholder="Enter No. of Books to import" name="no_of_records" required>
                         <p>Add Using ↓</p>
-                        <input type="text" placeholder="Book Title" name="title">
+                        <input type="text" placeholder="Book Title" name="title" pattern="[a-zA-Z\s]+">
                         <input type="text" placeholder="Book Authors" name="authors">
                         <input type="text" placeholder="ISBN" name="isbn">
                         <input type="text" placeholder="Publisher" name="publisher">
@@ -103,38 +103,6 @@
         </tbody>
     </table>
     {% endif %}
-
-    
-    <!-- Modal -->
-    {% for x in data %}
-    <div id="import_book{{ x['book_id'] }}" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header login-header">
-                    <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h4 class="modal-title">Import Books</h4>
-                </div>
-                <form method="POST" action="{{url_for('import_book')}}">
-                    <div class="modal-body">
-                        <input type="number" min="1" value="1" placeholder="Enter No. of Books to import" name="no_of_records" required>
-                        <p>Import Using ↓</p>
-                        <input type="text" placeholder="Book Title" value="{{ x['title'] }}" name="title" readonly> 
-                        <input type="text" placeholder="Book Authors" value="{{ x['authors'] }}" name="authors" readonly>
-                        <input type="text" placeholder="ISBN" value="{{ x['isbn'] }}" name="isbn" readonly>
-                        <input type="text" placeholder="Publisher" value="{{ x['publisher'] }}" name="publisher" readonly>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="cancel" data-dismiss="modal">Close</button>
-                        <button type="submit" name="import" class="add-project">Import</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-
 
     {% for x in data %}
         <div id="update_book{{ x['book_id'] }}" class="modal fade" role="dialog">
