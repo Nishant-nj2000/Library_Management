@@ -80,10 +80,10 @@ def import_book():
 				try:
 					for b in range(0,no_of_records):
 						book_id = a['message'][b]['bookID']
+						book_title = a['message'][b]['title']
 						book_data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
 						if len(book_data_check) == 0:
 							timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
-							book_title = a['message'][b]['title']
 							converted_book_title = a['message'][b]['title'].replace("'","\\'")
 							authors_name = a['message'][b]['authors'].replace("'","\\'")
 							publishers_name = a['message'][b]['publisher'].replace("'","\\'")
@@ -92,7 +92,6 @@ def import_book():
 							flash("The '"+book_title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
 							break
 						else:
-							book_title = a['message'][b]['title']
 							flash("The '"+book_title+"' book already exists ! try updating the stock from the update section.",'warning') 
 							break
 				except:
