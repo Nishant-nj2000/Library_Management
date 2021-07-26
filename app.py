@@ -12,9 +12,7 @@ from datetime import date
 import math
 
 app = Flask(__name__,template_folder = 'template')
-
 app.secret_key = "Library Management"
-
 app.config['MYSQL_DATABASE_HOST'] = os.environ.get('MYSQL_DATABASE_HOST')
 app.config['MYSQL_DATABASE_USER'] = os.environ.get('MYSQL_DATABASE_USER')
 app.config['MYSQL_DATABASE_PASSWORD'] = os.environ.get('MYSQL_DATABASE_PASSWORD')
@@ -23,9 +21,9 @@ mysql = MySQL(app)
 
 #MySQL Query Driver function
 def mysql_query(sql):
-	print(sql)
 	connection = mysql.connect()
 	cursor = connection.cursor()
+	print(sql)
 	if sql.strip().split(' ')[0].lower() == "select" :
 		cursor.execute(sql)
 		# print(cursor._executed)
@@ -44,6 +42,7 @@ def mysql_query(sql):
 		connection.close()
 		return None
 	
+#Homepage
 @app.route('/')
 def main():
 	total_books_issued = mysql_query("SELECT count(t_id) as total_books_issued from transactions")
@@ -56,7 +55,7 @@ def main():
 	total_amount_recieved = total_amount_recieved[0]['total_amount_recieved']
 	return render_template('index.html',total_books_issued = total_books_issued, registered_members = registered_members, available_books = available_books, total_amount_recieved = total_amount_recieved)
 
-
+#Import book from API
 @app.route('/import_book', methods=['POST'])
 def import_book():
 	try:
@@ -81,43 +80,35 @@ def import_book():
 				try:
 					for b in range(0,no_of_records):
 						book_id = a['message'][b]['bookID']
-						data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
-						if len(data_check) == 0:
+						book_data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
+						if len(book_data_check) == 0:
 							timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
 							book_title = a['message'][b]['title']
 							converted_book_title = a['message'][b]['title'].replace("'","\\'")
 							authors_name = a['message'][b]['authors'].replace("'","\\'")
 							publishers_name = a['message'][b]['publisher'].replace("'","\\'")
 							mysql_query("INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count,stock,total_stock) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(a['message'][b]['bookID'],converted_book_title,authors_name,a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,publishers_name,a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'],no_of_records,no_of_records))
+							print("now here")
 							flash("The '"+book_title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
 							break
 						else:
-							flash("The '"+book_title+"' book already exists ! try updating the stock.",'warning') 
+							book_title = a['message'][b]['title']
+							flash("The '"+book_title+"' book already exists ! try updating the stock from the update section.",'warning') 
+							break
 				except:
-					for b in range(1,no_of_records):
-						book_id = a['message'][b]['bookID']
-						data_check = mysql_query("SELECT book_id from books where book_id = '{}'".format(book_id))
-						if len(data_check) == 0:
-							timestring = datetime.strptime(a['message'][b]['publication_date'],'%m/%d/%Y')
-							book_title = a['message'][b]['title']
-							converted_book_title = a['message'][b]['title'].replace("'","\\'")
-							authors_name = a['message'][b]['authors'].replace("'","\\'")
-							publishers_name = a['message'][b]['publisher'].replace("'","\\'")
-							mysql_query("INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count,stock,total_stock) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(a['message'][b]['bookID'],converted_book_title,authors_name,a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,publishers_name,a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'],no_of_records,no_of_records))
-							flash("The '"+book_title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
-							break
-						else:
-							flash("The '"+book_title+"' book already exists ! try updating the stock",'warning') 
-			return redirect(url_for('manage_books'))
+					return redirect(url_for('manage_books'))
+				return redirect(url_for('manage_books'))			
 	except:
-			return redirect(url_for('manage_books'))
+		return redirect(url_for('manage_books'))
 
+#Manage Books Page Load
 @app.route('/manage_books')
 def manage_books():
-	data = mysql_query("SELECT * from books order by title ASC")
-	data1 = mysql_query("SELECT language_code from books")
-	return render_template('manage_books.html',data=data,data1=data1)
+	book_titles = mysql_query("SELECT * from books order by title ASC")
+	languages_codes = mysql_query("SELECT language_code from books")
+	return render_template('manage_books.html',book_titles=book_titles,languages_codes=languages_codes)
 
+#Update Books alongwith stock updation
 @app.route('/update_book', methods=['POST'])
 def update_book():
 	if request.method == 'POST':
@@ -130,10 +121,11 @@ def update_book():
 		publication_date = request.form['publication_date']
 		publisher = request.form['publisher'].replace("'","\\'")
 		stock = request.form['stock']
-		mysql_query("UPDATE books set title = '{}', average_rating = '{}', authors = '{}', language_code = '{}', publication_date = '{}', publisher = '{}', stock = '{}' where book_id = '{}'".format(converted_title,average_rating,authors,language_code,publication_date,publisher,stock,book_id))
+		mysql_query("UPDATE books set title = '{}', average_rating = '{}', authors = '{}', language_code = '{}', publication_date = '{}', publisher = '{}', stock = '{}', total_stock = '{}' where book_id = '{}'".format(converted_title,average_rating,authors,language_code,publication_date,publisher,stock,stock,book_id))
 		flash("The '"+title+"' Book Updated Successfully !",'success')
 	return redirect(url_for('manage_books'))
 
+#Delete Book
 @app.route('/delete_book', methods=['POST'])
 def delete_book():
 	if request.method == 'POST':
@@ -142,12 +134,13 @@ def delete_book():
 		flash("Book Deleted Successfuly !",'warning')
 	return redirect(url_for('manage_books'))
 
-
+#Manage Members Page Load
 @app.route('/manage_members')
 def manage_members():
-	data = mysql_query("SELECT * from members order by m_name")
-	return render_template('manage_members.html',data=data)
+	member_details = mysql_query("SELECT * from members order by member_id DESC")
+	return render_template('manage_members.html',member_details=member_details)
 
+#Add Member
 @app.route('/add_member', methods=['POST'])
 def add_member(): 
 	if request.method == 'POST' and 'm_name' in request.form and 'mobile' in request.form and 'email_id' in request.form and 'address' in request.form :
@@ -155,19 +148,18 @@ def add_member():
 		mobile = request.form['mobile']
 		email_id = request.form['email_id']
 		m_address = request.form['address'].replace("'","\\'")
-		
-		account = mysql_query("SELECT member_id from members where email_id='{}' OR mobile='{}'".format(email_id,mobile))
-		if len(account) == 0:
+		member_data_check = mysql_query("SELECT member_id from members where email_id='{}' OR mobile='{}'".format(email_id,mobile))
+		if len(member_data_check) == 0:
 			mysql_query("INSERT INTO members(m_name,mobile,email_id,m_address) values ('{}', '{}', '{}', '{}')".format(m_name,mobile,email_id,m_address))
 			flash("Member Added Successfully !",'info')	
 		else:
 			flash('Member Already Exists', 'danger')
-			data = mysql_query("SELECT * from members")
-			return render_template('manage_members.html',data=data)
+			return redirect(url_for('manage_members'))
 	elif request.method == 'POST':
 		flash('Please fill the form !','error')
 	return redirect(url_for('manage_members'))
 
+#Update Member
 @app.route('/update_member',methods=['POST'])
 def update_member():
 	if request.method == 'POST':
@@ -180,6 +172,7 @@ def update_member():
 		flash("'"+m_name+"'s details Updated Successfully !",'success')
 	return redirect(url_for('manage_members'))
 
+#Delete Member
 @app.route('/delete_member',methods=['POST'])
 def delete_member():
 	if request.method == 'POST':
@@ -188,21 +181,25 @@ def delete_member():
 		flash("Member Deleted Successfuly !",'warning')
 	return redirect(url_for('manage_members'))
 
+#Terms of Service Page Load
 @app.route('/terms')
 def terms():
     return render_template('terms.html')
 
+#Terms Checked page redirection
 @app.route('/terms_checked',methods=['POST'])
 def terms_checked():
     return redirect(url_for('issue_books_page_load'))
-			
+
+#Page Load Issue Books		
 @app.route('/issue_books_page_load')
 def issue_books_page_load():
-	data = mysql_query("SELECT book_id,title from books")
-	data1 = mysql_query("SELECT member_id,m_name from members")
-	data3 = mysql_query("SELECT t.*,b.title,m.m_name from transactions t, books b, members m where b.book_id = t.book_id and m.member_id = t.member_id order by t.t_id DESC")	
-	return render_template('issue_books.html',data=data,data1=data1,data3=data3)
+	book_details = mysql_query("SELECT book_id,title from books")
+	member_details = mysql_query("SELECT member_id,m_name from members")
+	transaction_details = mysql_query("SELECT t.*,b.title,m.m_name from transactions t, books b, members m where b.book_id = t.book_id and m.member_id = t.member_id order by t.t_id DESC")	
+	return render_template('issue_books.html',book_details=book_details,member_details=member_details,transaction_details=transaction_details)
 
+#Issue Books to Members meanwhile checking several conditions
 @app.route('/issue_book',methods=['POST'])
 def issue_book():
 	try:
@@ -210,36 +207,33 @@ def issue_book():
 			book_id = request.form['book_id']
 			member_id = request.form['member_id']
 			issue_date = date.today()
-			print(book_id)
-			print(member_id)
 			if book_id and member_id != 0:
-				record = mysql_query("SELECT book_id,member_id,return_date from transactions where book_id = '{}' and member_id = '{}'".format(book_id,member_id))
-				issues_of_books =  mysql_query("SELECT count(member_id) as total_issues_without_return from transactions where member_id = '{}' and return_date is NULL group by member_id".format(member_id))
+				book_issued_data_check = mysql_query("SELECT book_id,member_id,return_date from transactions where book_id = '{}' and member_id = '{}'".format(book_id,member_id))
+				book_issued_times =  mysql_query("SELECT count(member_id) as total_issues_without_return from transactions where member_id = '{}' and return_date is NULL group by member_id".format(member_id))
 				stock = mysql_query("SELECT title,stock from books where book_id = '{}'".format(book_id))
 				m_name = mysql_query("SELECT m_name from members where member_id = '{}'".format(member_id))
 				total_outstandings = mysql_query("SELECT sum(outstanding_amount) as total_outstandings from transactions where member_id = '{}' group by member_id".format(member_id))
 				m_name = m_name[0]['m_name']
 				title = stock[0]['title']
 				
-				if len(record) != 0 and record[0]['return_date'] == None :
-					flash(title+" book is already issued to "+m_name+" !" ,'warning')
-				elif len(issues_of_books) != 0 and issues_of_books[0]['total_issues_without_return'] == 2:
-					flash(m_name+" has already been issued 2 books which are not returned yet ! Return some to proceed." ,'danger')
+				if len(book_issued_data_check) != 0 and book_issued_data_check[0]['return_date'] == None :
+					flash("'"+title+"' book is already issued to '"+m_name+"' !" ,'warning')
+				elif len(book_issued_times) != 0 and book_issued_times[0]['total_issues_without_return'] == 2:
+					flash("'"+m_name+"' has already been issued 2 books which are not returned yet ! Return some to proceed." ,'danger')
 				elif len(stock) != 0 and stock[0]['stock'] == 0:
-					flash(title+" book is Out of Stock ! It will be right back soon." ,'warning')
+					flash("The '"+title+"' book is Out of Stock ! It will be right back soon." ,'warning')
 				elif len(total_outstandings) != 0 and total_outstandings[0]['total_outstandings'] > 500:
-					flash("Total Outstandings for "+m_name+" Exceeds ₹500 ! Clear the outstanding amount." ,'danger')
+					flash("Total Outstandings for '"+m_name+"' Exceeds ₹500 ! Clear the outstanding amount." ,'danger')
 				else:
 					mysql_query("UPDATE books set stock = stock - {} where book_id = '{}'".format(1,book_id))
 					mysql_query("INSERT into transactions(book_id,member_id,issue_date) values ('{}','{}','{}')".format(book_id,member_id,issue_date))
+					flash("'"+title+ "' book successfully issued to '"+m_name+"'",'success')
 		return redirect(url_for('issue_books_page_load'))
 	except:
 		flash("Please Select Valid input" ,'danger')
 		return redirect(url_for('issue_books_page_load'))
 
-		
-	
-
+#Return Book
 @app.route('/book_return',methods=['POST'])
 def book_return():
 	if request.method == 'POST':
@@ -256,10 +250,13 @@ def book_return():
 			amount_paid_till_now = result[0]['total_rent_amount_paid_yet']
 			m_id = result[0]['m_id']
 			mysql_query("UPDATE members set total_amount_paid = '{}' where member_id = '{}'".format(amount_paid_till_now,m_id))
+			flash("Book Returned Successfully",'success')
 		else:
 			mysql_query("UPDATE transactions t inner join members m on t.member_id = m.member_id set t.outstanding_amount = '{}', t.return_date = '{}', t.total_rent = '{}', t.rent_paid = '{}' where t.t_id = '{}'".format(rent_amount_to_collect,return_date,rent_amount_to_collect,rent_paid,t_id))
+			flash("Book Returned Successfully, Amount transferred to Outstanding Amount",'info')
 		return redirect(url_for('issue_books_page_load'))
 
+#Outstanding Amount Settlement
 @app.route('/outstanding_settlement',methods=['POST'])
 def outstanding_settlement():
 	if request.method == 'POST':
@@ -277,25 +274,25 @@ def outstanding_settlement():
 			amount_paid_till_now = result[0]['total_rent_amount_paid_yet']
 			m_id = result[0]['m_id']
 			mysql_query("UPDATE members set total_amount_paid = '{}' where member_id = '{}'".format(amount_paid_till_now,m_id))
-			flash("Outstanding Amount Cleared for " +m_name ,'success')
+			flash("Outstanding Amount Cleared for '"+m_name+"'" ,'success')
 		else:
 			mysql_query("UPDATE transactions set outstanding_amount = '{}' where member_id = '{}' and t_id = '{}'".format(new_amount,member_id,t_id))
 			mysql_query("UPDATE members set total_amount_paid =  total_amount_paid + '{}' where member_id = '{}'".format(rent_amount,member_id))
-			flash("Adjustments done for " +m_name ,'info')
+			flash("Adjustments done for '"+m_name+"'" ,'info')
 	return redirect(url_for('issue_books_page_load'))
 
+#Report1 - Highest Paying Customer
+@app.route('/highest_paying_customer_report')
+def highest_paying_customer_report():
+	highest_paying_customers = mysql_query("SELECT * from members order by total_amount_paid DESC")
+	return render_template('reports.html',highest_paying_customers = highest_paying_customers)
 
-@app.route('/report1')
-def report1():
-	data = mysql_query("SELECT * from members order by total_amount_paid DESC")
-	return render_template('reports.html',data = data)
+#Report 2 - Most Pupular Book
+@app.route('/most_popular_book_report')
+def most_popular_book_report():
+	most_popular_book = mysql_query("SELECT b.book_id,b.title,b.authors,b.publication_date,b.stock,b.total_stock,b.publisher,b.ratings_count,count(t.book_id) from transactions t,books b where b.book_id = t.book_id group by t.book_id order by count(t.book_id) DESC")
+	return render_template('reports.html',most_popular_book = most_popular_book)
 
-@app.route('/report2')
-def report2():
-	data2 = mysql_query("SELECT b.book_id,b.title,b.authors,b.publication_date,b.stock,b.total_stock,b.publisher,b.ratings_count,count(t.book_id) from transactions t,books b where b.book_id = t.book_id group by t.book_id order by count(t.book_id) DESC")
-	print(data2)
-	return render_template('reports.html',data2 = data2)
-
-
+#App runner
 if __name__ == "__main__":
 	app.run(debug=True)

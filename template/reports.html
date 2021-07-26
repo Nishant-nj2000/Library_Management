@@ -26,7 +26,7 @@
 
     <div id="printdivision">
         <br>
-        {% if data %}
+        {% if highest_paying_customers %}
         <h4 align="center"> Report - Highest Paying Customer </h4><br>
         <table class="table table-hover table-responsive" id="report_table">
             <thead class="thead-dark">
@@ -37,7 +37,7 @@
                 <th scope="col">Address</th>
                 <th scope="col">Total Amount Paid</th>
             </thead>
-            {% for x in data %}
+            {% for x in highest_paying_customers %}
             <tbody>            
                 <tr>
                     <td>{{ x['member_id'] }}</td>
@@ -53,7 +53,7 @@
         {% endif %}
         
         
-        {% if data2 %}
+        {% if most_popular_book %}
         <h4 align="center"> Report - Most Popular Books </h4><br>
         <table class="table table-hover table-responsive" id="report_table">
             <thead class="thead-dark">
@@ -69,7 +69,7 @@
             </thead>
                 
             <tbody>
-                {% for x in data2 %}
+                {% for x in most_popular_book %}
                     <tr>
                         <td>{{ x['book_id'] }}</td>
                         <td>{{ x['title'] }}</td>
@@ -78,7 +78,7 @@
                         <td>{{ x['ratings_count'] }}</td>
                         <td>{{ x['publication_date'] }}</td>
                         {% if x['stock'] == 0 %}
-                            <td style="color:red">{{ x['stock'] }}</button></td>
+                            <td style="color:red">N/A</button></td>
                         {% else %}
                             <td>{{ x['stock'] }}</td>
                         {% endif %}

@@ -33,7 +33,7 @@
                             <li class="hidden-xs">
                                 <select name="book_id" class="form-control js-select2-plugin form-control-sm">
                                     <option value=0>Select Book</option>
-                                    {% for x in data %}
+                                    {% for x in book_details %}
                                         <option value="{{ x['book_id'] }}">{{ x['title'] }}</option>
                                     {% endfor %}
                                 </select>
@@ -44,14 +44,14 @@
                             <li class="hidden-xs" > 
                                 <select name="member_id" class="form-control js-select2-plugin form-control-lg">
                                     <option value=0>Select Member</option>
-                                    {% for x in data1 %}
+                                    {% for x in member_details %}
                                         <option value="{{ x['member_id'] }}">{{ x['m_name'] }}</option>
                                     {% endfor %}
                                 </select>
                             </li>
                         </ul>
     
-                        {% for x in data3 %}
+                        {% for x in transaction_details %}
                             <input type="hidden" name="outstanding_amount" value="{{ x['outstanding_amount'] }}">
                         {% endfor %}
                         
@@ -65,7 +65,7 @@
     </form>
 
     <br>
-    {% if data3 %}
+    {% if transaction_details %}
     <table id="issued_books" class="table table-hover table-responsive">
         <thead class="thead-dark">
             <th scope="col">Transaction Id</th>
@@ -80,7 +80,7 @@
         </thead>
             
         <tbody>
-            {% for x in data3 %}
+            {% for x in transaction_details %}
                 <tr>
                     <td>{{ x['t_id'] }}</td>
                     <td>{{ x['title'] }}</td>
@@ -124,7 +124,7 @@
     {% endif %}
     
 
-    {% for x in data3 %}
+    {% for x in transaction_details %}
         <div id="book_return{{ x['t_id'] }}" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <!-- Modal content-->
@@ -138,7 +138,7 @@
                             <input type="text" name="title" value="{{ x['title'] }}" readonly>
                             <input type="text" name="m_name" value="{{ x['m_name'] }}" readonly>
                             <input type="text" pattern="[0-9]+" name="rent_amount_to_collect" placeholder="Enter the Amount you want to collect !" required>
-                            <select name="rent_paid">
+                            <select name="rent_paid" required>
                                 <option value="0">-- Amount Paid ? --</option>
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
@@ -156,7 +156,7 @@
         </div>
     {% endfor %}
     
-    {% for x in data3 %}
+    {% for x in transaction_details %}
         <div id="outstanding_settlement{{ x['t_id'] }}" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <!-- Modal content-->

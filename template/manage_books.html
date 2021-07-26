@@ -66,7 +66,7 @@
     </div>
 
     <br>
-    {% if data %}
+    {% if book_titles %}
     <table id="books_table" class="table table-hover table-responsive">
         <thead class="thead-dark">
             <th scope="col">Book Id</th>
@@ -82,7 +82,7 @@
         </thead>
             
         <tbody>
-            {% for x in data %}
+            {% for x in book_titles %}
                 <tr>
                     <td>{{ x['book_id'] }}</td>
                     <td>{{ x['title'] }}</td>
@@ -104,7 +104,7 @@
     </table>
     {% endif %}
 
-    {% for x in data %}
+    {% for x in book_titles %}
         <div id="update_book{{ x['book_id'] }}" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <!-- Modal content-->
@@ -124,7 +124,7 @@
                             <p style="margin-bottom:0px;">Language</p>
                             <select name="language_code">
                                 <option value="{{ x['language_code'] }}">{{ x['language_code'] }}</option>
-                                {% for x in data1 %}
+                                {% for x in languages_codes %}
                                     <option>{{ x['language_code'] }}</option>
                                 {% endfor %}
                             </select>
@@ -146,7 +146,7 @@
     {% endfor %}
     
 
-    {% for x in data %}
+    {% for x in book_titles %}
         <div id="delete_book{{ x['book_id'] }}" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <!-- Modal content-->
