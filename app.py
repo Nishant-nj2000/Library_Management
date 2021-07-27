@@ -88,13 +88,13 @@ def import_book():
 							authors_name = a['message'][b]['authors'].replace("'","\\'")
 							publishers_name = a['message'][b]['publisher'].replace("'","\\'")
 							mysql_query("INSERT INTO books(book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,publication_date,publisher,ratings_count,text_reviews_count,stock,total_stock) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(a['message'][b]['bookID'],converted_book_title,authors_name,a['message'][b]['average_rating'],a['message'][b]['isbn'],a['message'][b]['isbn13'],a['message'][b]['language_code'],a['message'][b]['  num_pages'],timestring,publishers_name,a['message'][b]['ratings_count'],a['message'][b]['text_reviews_count'],no_of_records,no_of_records))
-							print("now here")
 							flash("The '"+book_title+"' book has been added successfully with '"+String_no_of_records+"' quantities in stock !",'success') 
 							break
 						else:
 							flash("The '"+book_title+"' book already exists ! try updating the stock from the update section.",'warning') 
 							break
 				except:
+					flash("The '"+title+"' book doesn't exists",'danger')
 					return redirect(url_for('manage_books'))
 				return redirect(url_for('manage_books'))			
 	except:
