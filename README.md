@@ -5,7 +5,7 @@ Developed and deployed a library management web application along
 with CRUD operations using REST API and Report generation.
 
 # Technologies used
-Html5, CSS, Bootstrap, Python, Flask, MySQL, Heroku.
+Html5, CSS, Bootstrap, Python, Flask, MySQL, REST API, Heroku.
 
 # Dashboard
 **Home**
